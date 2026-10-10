@@ -8,6 +8,12 @@
 
 不靠拍脑袋编价格——所有餐品、优惠、营养都来自麦当劳 MCP 实时数据。
 
+## 在线体验（无需安装，10 秒试玩）
+打开 👉 **https://penk-git.github.io/mcd-campus-combo/** 即可在浏览器里选场景、调预算，实时看到 Top3 凑单方案。
+（手机也能开，适合发到社团群让同学一起凑。当前为演示数据，真实版接入麦当劳中国 MCP 实时菜单与优惠。）
+
+> 启用方法：本仓库已含 `index.html`（单页 demo）。在仓库 **Settings → Pages → Source 选 `main` / `root`** 即可上线上面的地址。
+
 ## 目标用户
 - 学生党（早八、课间、考试周、夜宵、社团拼单）
 - 想用最少预算在麦当劳吃值的任何人
@@ -47,12 +53,15 @@ python campus_combo_finder.py --profile 考试周补能量      # 在线：实�
 ```
 CONTEST_DECLARATION.md   # 参赛声明（内容不可改）
 README.md                # 本文件
+index.html               # 单页在线 demo（GitHub Pages，10 秒试玩）
+combo.js                 # demo 用的纯 JS 凑单算法（与 Python 版等价，可 Node 校验）
 SKILL.md                 # WorkBuddy Skill 定义（联动奖励载体）
 MCP_INTEGRATION.md       # MCP 调用说明（用了哪些 Tool、怎么调）
 mcp-config.example.json  # 脱敏配置示例（仅环境变量占位符）
 workbuddy.md             # WorkBuddy 开发上下文（参与专项奖时必交）
 campus_combo_finder.py   # 凑单核心算法（含离线 mock 自测 + 在线 MCP 接入）
 mcd_mcp_client.py        # 麦当劳 MCP Streamable HTTP 客户端（标准库实现）
+verify_demo.js           # Node 校验脚本（5 场景对比 Python 输出）
 ```
 
 > ⚠️ 本作品为参赛者独立开发，非麦当劳官方产品。餐品信息、价格及供应状态以麦当劳官方渠道实时结果为准。
