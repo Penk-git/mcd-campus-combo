@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>麦当劳校园省钱凑单助手 · 手账风</title>
+<style>
+  :root {
+    --paper: #fbf3e2;
+    --paper2: #fffaf0;
+    --ink: #5b4636;
+    --muted: #9a8366;
+    --accent: #e07a5f;
+    --accent2: #81a684;
+    --yellow: #f2cc8f;
+    --line: #e3d2b3;
+    --shadow: 0 6px 18px rgba(120,90,50,.14);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", "Comic Sans MS", "STKaiti", "KaiTi", cursive, sans-serif;
+    background:
+      linear-gradient(0deg, rgba(240,228,200,.5) 1px, transparent 1px) 0 0 / 100% 26px,
+      var(--paper);
+    color: var(--ink); line-height: 1.55; padding: 16px 14px 48px;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  header { text-align: center; padding: 14px 4px 18px; position: relative; }
+  .badge {
+    display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: var(--accent);
+    padding: 5px 14px; border-radius: 3px; transform: rotate(-1.5deg);
+    box-shadow: 2px 2px 0 rgba(120,90,50,.2);
+  }
+  h1 { font-size: 25px; margin: 16px 0 4px; letter-spacing: .5px; font-weight: 800; color: var(--ink); }
+  .sub { font-size: 13px; color: var(--muted); margin: 0; }
+  .panel {
+    background: var(--paper2); border: 2px dashed var(--line); border-radius: 14px;
+    padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px;
+  }
+  .label { font-size: 14px; font-weight: 800; color: var(--accent); margin: 0 0 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 2px dashed var(--line); background: #fff; color: var(--ink);
+    padding: 8px 13px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: .15s; user-select: none;
+  }
+  .chip:active { transform: scale(.96); }
+  .chip.on { background: var(--yellow); border-style: solid; border-color: var(--accent); color: var(--ink); }
+  .row { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .field { flex: 1 1 140px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 700; display: block; margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; font-size: 15px; font-weight: 700;
+    border: 2px solid var(--line); border-radius: 10px; background: #fffdf8; color: var(--ink); outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .note { font-size: 12px; color: var(--muted); font-weight: 700; margin: 12px 0 0; min-height: 16px; }
+  .go {
+    width: 100%; margin-top: 14px; border: none; cursor: pointer;
+    background: var(--accent); color: #fff; font-size: 16px; font-weight: 800; letter-spacing: 1px;
+    padding: 13px; border-radius: 12px; box-shadow: 3px 3px 0 rgba(120,90,50,.25); transition: .12s;
+  }
+  .go:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 rgba(120,90,50,.25); }
+  .results { margin-top: 4px; }
+  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 24px 0; font-weight: 700; }
+  .rcard {
+    background: var(--paper2); border: 2px dashed var(--line); border-radius: 14px;
+    padding: 14px 14px 12px; margin-bottom: 12px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .rcard::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--accent2); }
+  .rcard.r1::before { background: var(--accent); }
+  .rcard.r2::before { background: var(--yellow); }
+  .rcard.r3::before { background: #b9a07d; }
+  .rtop { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .rank { font-size: 12px; font-weight: 800; color: #fff; background: var(--accent2); padding: 3px 10px; border-radius: 8px; }
+  .r1 .rank { background: var(--accent); }
+  .r2 .rank { background: var(--yellow); color: var(--ink); }
+  .r3 .rank { background: #b9a07d; }
+  .pay { font-size: 13px; color: var(--muted); font-weight: 700; }
+  .pay b { font-size: 26px; color: var(--accent); font-weight: 900; margin-right: 2px; }
+  .pay .orig { text-decoration: line-through; opacity: .6; }
+  .items { margin: 10px 0 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .itag { background: #fff6e6; border: 1.5px solid var(--line); color: var(--ink); font-size: 13px; font-weight: 700; padding: 4px 9px; border-radius: 9px; }
+  .itag b { color: var(--accent); }
+  .meta { display: flex; gap: 14px; font-size: 12px; color: var(--muted); font-weight: 700; flex-wrap: wrap; }
+  .meta span b { color: var(--ink); font-weight: 800; }
+  .cpn { display: inline-block; font-size: 11px; font-weight: 800; color: #7a5a2a; background: var(--yellow); border: 1px dashed #d8b86a; padding: 1px 7px; border-radius: 6px; margin-left: 6px; }
+  .star {
+    display: flex; align-items: center; justify-content: center; gap: 8px; margin: 18px auto 4px; max-width: 420px;
+    background: var(--yellow); color: var(--ink); font-weight: 800; font-size: 15px;
+    text-decoration: none; padding: 13px; border-radius: 12px; box-shadow: 3px 3px 0 rgba(120,90,50,.25); transform: rotate(-.6deg);
+  }
+  .star:active { transform: rotate(-.6deg) translate(2px,2px); }
+  .copy {
+    display: block; width: 100%; max-width: 420px; margin: 10px auto 0;
+    border: 2px dashed var(--accent); background: #fff; color: var(--accent); font-weight: 800; font-size: 13px;
+    padding: 10px; border-radius: 10px; cursor: pointer;
+  }
+  .disc { font-size: 11px; color: #b39a78; text-align: center; margin-top: 22px; line-height: 1.8; font-weight: 600; }
+  a.link { color: var(--accent); text-decoration: none; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">🏆 2026 程序员创意开发大赛</span>
+    <h1>🍔 麦当劳校园省钱凑单</h1>
+    <p class="sub">按预算 / 校园场景，凑出最划算套餐 · 一句话就能用</p>
+  </header>
+
+  <div class="panel">
+    <p class="label">① 选校园场景</p>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <div class="field">
+        <label>预算（元）</label>
+        <input id="budget" type="number" min="1" step="1" value="15" inputmode="numeric" />
+      </div>
+      <div class="field">
+        <label>想要什么</label>
+        <select id="mode">
+          <option value="count">份数最多</option>
+          <option value="energy">每元热量最高</option>
+          <option value="protein">每元蛋白最高</option>
+        </select>
+      </div>
+    </div>
+    <p class="note" id="note"></p>
+    <button class="go" id="go">算一下最划算的搭法 🍟</button>
+  </div>
+
+  <div class="results" id="results">
+    <div class="empty">选好场景点「算一下」，3 秒出 Top3 凑单方案 👆</div>
+  </div>
+
+  <a class="star" href="https://github.com/Penk-git/mcd-campus-combo" target="_blank" rel="noopener">⭐ 觉得好用？给项目点个 Star 支持一下</a>
+  <button class="copy" id="copy">📋 复制当前方案</button>
+
+  <p class="disc">
+    当前为演示数据（内置菜单与示意优惠），真实版本接入麦当劳中国 MCP<br/>
+    实时拉取 <b>query-meals / available-coupons / calculate-price</b> 等工具，显示真实价格与优惠。<br/>
+    项目地址：<a class="link" href="https://github.com/Penk-git/mcd-campus-combo" target="_blank" rel="noopener">github.com/Penk-git/mcd-campus-combo</a>
+  </p>
+</div>
+
+<script src="combo.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
