@@ -67,6 +67,14 @@ PROFILES = {
 
 MAX_COMBO_SIZE = 4  # 默认枚举上限，防止组合爆炸
 
+# 甜品关键词（派/圆筒/冰淇淋/圣代/麦旋风等）。count 模式下降权，但仍可入选。
+DESSERT_KW = ["派", "圆筒", "冰淇淋", "圣代", "麦旋风", "布蕾", "糍粑", "雪糕", "火炬", "旋风"]
+
+
+def is_dessert(it):
+    n = it.get("name", "")
+    return any(k in n for k in DESSERT_KW)
+
 
 # ------------------------- 优惠（mock 近似；在线用 calculate-price 核对） -------------------------
 def best_coupon_discount(original, coupons):
@@ -87,7 +95,9 @@ def score_combo(combo, mode):
         return total_protein
     if mode == "energy":
         return total_energy
-    return total_qty  # count
+    # count 模式：甜品降权（不删除），鼓励咸食/主食拼单，纯甜品堆砌得分偏低
+    dessert = sum(q for i, q in combo if is_dessert(i))
+    return total_qty - 0.6 * dessert
 
 
 # ------------------------- 搜索 -------------------------
@@ -97,9 +107,21 @@ def search_combos(menu, coupons, budget, tags, mode, max_qty, max_size=MAX_COMBO
     if not pool:
         pool = list(menu)
 
-    # 枚举上限：预设可放大（如聚餐），但菜品过多时自动收紧，避免组合爆炸
+    # 大池子按评分目标先筛最相关的前 K 个，并收紧枚举上限，避免组合爆炸：
+    # 份数最多→最便宜的；蛋白/热量→每元性价比最高的
     if len(pool) > 25:
+        K = 20
+        if mode == "count":
+            pool = sorted(pool, key=lambda i: i["price"])[:K]
+        else:
+            pool = sorted(pool, key=lambda i: (i["protein"] if mode == "protein" else i["energy"]) / max(i["price"], 0.01), reverse=True)[:K]
         max_size = min(max_size, 4)
+
+    # 枚举上限兜底
+    if len(pool) > 60:
+        max_size = min(max_size, 2)
+    elif len(pool) > 25:
+        max_size = min(max_size, 3)
 
     candidates = []
     for size in range(1, max_size + 1):

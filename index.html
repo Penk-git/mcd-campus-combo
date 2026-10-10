@@ -199,6 +199,7 @@
     <span class="badge">🏆 2026 程序员创意开发大赛</span>
     <h1><span class="fries-emoji">🍔</span> 麦当劳校园省钱凑单</h1>
     <p class="sub">按预算 / 校园场景，凑出最划算套餐 · 一句话就能用</p>
+    <p class="sub" id="datasrc" style="margin-top:6px; color:#fff; font-weight:800"></p>
   </div>
 
   <!-- 漂浮食品小挂件 -->
@@ -254,12 +255,14 @@
   </div>
 
   <p class="disc">
-    当前为演示数据（内置菜单与示意优惠），真实版本接入麦当劳中国 MCP<br/>
-    实时拉取 <b>query-meals / available-coupons / calculate-price</b> 等工具，显示真实价格与优惠。<br/>
+    本页菜单 / 价格 / 热量 / 蛋白质均来自 <b>麦当劳中国官方 MCP</b> 真实接口<br/>
+    （query-nearby-stores · query-meals · list-nutrition-foods），为所选门店在售菜单的实时快照。<br/>
+    ⚠️ 快照为拉取时刻该门店在售餐品：早餐品类仅在早餐时段真实出现在菜单中；优惠券以门店实时返回为准。<br/>
     项目地址：<a class="link" href="https://github.com/Penk-git/mcd-campus-combo" target="_blank" rel="noopener">github.com/Penk-git/mcd-campus-combo</a>
   </p>
 </div>
 
+<script src="real_menu.js"></script>
 <script src="combo.js"></script>
 <script src="demo.js"></script>
 </body>

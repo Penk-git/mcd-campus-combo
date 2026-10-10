@@ -37,6 +37,13 @@
 
   var MAX_COMBO_SIZE = 4;
 
+  // 甜品关键词（派/圆筒/冰淇淋/圣代/麦旋风等）。count 模式下降权，但仍可入选。
+  var DESSERT_KW = ["派", "圆筒", "冰淇淋", "圣代", "麦旋风", "布蕾", "糍粑", "雪糕", "火炬", "旋风"];
+  function isDessert(it) {
+    var n = it.name || "";
+    return DESSERT_KW.some(function (k) { return n.indexOf(k) !== -1; });
+  }
+
   function bestCouponDiscount(original, coupons) {
     var best = { id: null, desc: "", discount: 0.0 };
     coupons.forEach(function (c) {
@@ -50,16 +57,18 @@
   }
 
   function scoreCombo(pairList, mode) {
-    var energy = 0, protein = 0, qty = 0;
+    var energy = 0, protein = 0, qty = 0, dessert = 0;
     pairList.forEach(function (p) {
       var it = p[0], q = p[1];
       energy += it.energy * q;
       protein += it.protein * q;
       qty += q;
+      if (isDessert(it)) dessert += q;
     });
     if (mode === "protein") return protein;
     if (mode === "energy") return energy;
-    return qty; // count
+    // count 模式：甜品降权（不删除），鼓励咸食/主食拼单，纯甜品堆砌得分偏低
+    return qty - 0.6 * dessert;
   }
 
   // 组合生成器（带重复，非降序索引去重排列）
@@ -81,7 +90,24 @@
       return !tags || tags.length === 0 || tags.some(function (t) { return i.tags.indexOf(t) !== -1; });
     });
     if (pool.length === 0) pool = menu.slice();
-    if (pool.length > 25) maxSize = Math.min(maxSize, 4);
+    // 大池子按评分目标先筛最相关的前 K 个，并收紧枚举上限，避免组合爆炸：
+    // 份数最多→最便宜的；蛋白/热量→每元性价比最高的
+    if (pool.length > 25) {
+      var K = 20;
+      if (mode === "count") {
+        pool = pool.slice().sort(function (a, b) { return a.price - b.price; }).slice(0, K);
+      } else {
+        pool = pool.slice().sort(function (a, b) {
+          var ra = (mode === "protein" ? a.protein : a.energy) / Math.max(a.price, 0.01);
+          var rb = (mode === "protein" ? b.protein : b.energy) / Math.max(b.price, 0.01);
+          return rb - ra;
+        }).slice(0, K);
+      }
+      maxSize = Math.min(maxSize, 4);
+    }
+    // 性能护栏兜底
+    if (pool.length > 60) maxSize = Math.min(maxSize, 2);
+    else if (pool.length > 25) maxSize = Math.min(maxSize, 3);
 
     var candidates = [];
     for (var size = 1; size <= maxSize; size++) {

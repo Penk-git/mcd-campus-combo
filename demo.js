@@ -9,6 +9,11 @@
   var C = window.Combo;
   if (!C) return;
 
+  // 真实数据优先：window.REAL_MENU 来自官方 MCP 快照（real_menu.js）
+  var REAL = window.REAL_MENU;
+  var MENU = REAL ? REAL.items : C.MOCK_MENU;
+  var COUPONS = (REAL && REAL.coupons && REAL.coupons.length) ? REAL.coupons : C.MOCK_COUPONS;
+
   var chipsEl = document.getElementById("chips");
   var budgetEl = document.getElementById("budget");
   var modeEl = document.getElementById("mode");
@@ -41,6 +46,15 @@
   }
   applyProfile();
 
+  // 真实数据来源标注
+  if (REAL) {
+    var ds = document.getElementById("datasrc");
+    if (ds) {
+      var src = REAL.store && REAL.store.name ? REAL.store.name : "麦当劳中国官方 MCP";
+      ds.textContent = "✅ 真实数据 · " + src + " · 共 " + MENU.length + " 个在售餐品";
+    }
+  }
+
   function fmtItems(items) {
     return items.map(function (it) {
       return '<span class="itag">' + it[0] + (it[1] > 1 ? ' <b>×' + it[1] + '</b>' : '') + '</span>';
@@ -52,7 +66,7 @@
     var budget = parseFloat(budgetEl.value);
     if (!(budget > 0)) { alert("预算填个正数哈"); return; }
     var mode = modeEl.value;
-    var top = C.searchCombos(C.MOCK_MENU, C.MOCK_COUPONS, budget, p.tags, mode, p.max_qty, p.max_size);
+    var top = C.searchCombos(MENU, COUPONS, budget, p.tags, mode, p.max_qty, p.max_size);
 
     if (!top || top.length === 0) {
       resultsEl.innerHTML = '<div class="empty">⚠️ 这个预算 / 场景下凑不出组合，<br/>试试提高预算或换个场景。</div>';
