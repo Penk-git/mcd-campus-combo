@@ -6,11 +6,11 @@
 ## 项目介绍
 一个面向**学生党**的麦当劳凑单助手：按你的**预算**和**校园场景**（早八快手 / 课间垫肚子 / 考试周补能量 / 宿舍夜宵 / 社团聚餐），调用麦当劳中国 MCP 拉取实时菜单与优惠，在预算内算出**性价比最高的凑单方案**（份数最多 / 每元热量最高 / 每元蛋白质最高），并用官方 `calculate-price` 核对真实应付。
 
-不靠拍脑袋编价格——所有餐品、优惠、营养都来自麦当劳 MCP 实时数据。
+不靠拍脑袋编价格——餐品与营养来自麦当劳 MCP 实时数据；优惠为示意，以官方实时为准。
 
 ## 在线体验（无需安装，10 秒试玩）
 打开 👉 **https://penk-git.github.io/mcd-campus-combo/** 即可在浏览器里选场景、调预算，实时看到 Top3 凑单方案。
-（手机也能开，适合发到社团群让同学一起凑。当前为演示数据，真实版接入麦当劳中国 MCP 实时菜单与优惠。）
+（手机也能开，适合发到社团群让同学一起凑。菜单与营养数据来自麦当劳中国官方 MCP 实时快照 `real_menu.json`；优惠为示意，以官方实时为准。）
 
 > 启用方法：本仓库已含 `index.html`（单页 demo）。在仓库 **Settings → Pages → Source 选 `main` / `root`** 即可上线上面的地址。
 
@@ -34,19 +34,19 @@ python campus_combo_finder.py --profile 考试周补能量      # 在线：实�
 
 ## 使用示例
 > 用户：考试周想吃点高蛋白的，预算 25
-> 助手：（调用 query-meals + list-nutrition-foods + calculate-price）
+> 助手：（调用 query-meals + list-nutrition-foods + calculate-price，以下为真实数据示例）
 ```
-第1名  实付 ¥22（原价 ¥30 【满30减8】）
-  组合：吉士蛋麦满分×1 + 猪柳蛋麦满分×1
-  份数 2 ｜ 热量 680kcal ｜ 蛋白 38g
+第1名  实付 ¥23（原价 ¥28）
+  组合：那么大鸡排（椒盐风味）×2
+  份数 2 ｜ 热量 770kcal ｜ 蛋白 48g
 ```
 
 > 用户：社团聚餐拼单，60 块怎么点份数最多
-> 助手：（调用 query-meals + available-coupons + calculate-price）
+> 助手：（调用 query-meals + query-store-coupons + calculate-price，以下为真实数据示例）
 ```
-第1名  实付 ¥31（原价 ¥39 【满30减8】）
-  组合：脆薯饼×3 + 热豆浆×3
-  份数 6
+第1名  实付 ¥22（原价 ¥30 【满30减8】）
+  组合：苹果片×2 + 脆薯饼×2
+  份数 4
 ```
 
 ## 目录结构
@@ -61,7 +61,11 @@ mcp-config.example.json  # 脱敏配置示例（仅环境变量占位符）
 workbuddy.md             # WorkBuddy 开发上下文（参与专项奖时必交）
 campus_combo_finder.py   # 凑单核心算法（含离线 mock 自测 + 在线 MCP 接入）
 mcd_mcp_client.py        # 麦当劳 MCP Streamable HTTP 客户端（标准库实现）
+build_real_menu.py       # 用官方 MCP 拉取真实菜单/营养/券，导出 real_menu.json + real_menu.js 快照
+real_menu.json           # 真实菜单快照（来自官方 MCP，含来源/门店/餐品/营养）
+real_menu.js             # real_menu.json 的 JS 版（供 index.html 直接加载，免 fetch/CORS）
 verify_demo.js           # Node 校验脚本（5 场景对比 Python 输出）
+verify_real.js           # Node 校验脚本（真实数据下 5 场景跑通 + 性能）
 ```
 
 > ⚠️ 本作品为参赛者独立开发，非麦当劳官方产品。餐品信息、价格及供应状态以麦当劳官方渠道实时结果为准。
