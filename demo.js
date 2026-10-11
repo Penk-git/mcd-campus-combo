@@ -122,15 +122,16 @@
     });
   })();
   // 实时拉取：优先浏览器定位(lat/lng)，或城市选择(city)，或指定门店(storeCode)。
-  // 失败自动重试一次，再失败回退快照并允许点击重试。
-  function loadLive(lat, lng, city, storeCode, isRetry) {
+  // 失败自动重试最多 2 次（腾讯云网关多 IP 轮询，偶发单 IP 不可达，重试换 IP 大概率成功），再失败回退快照并允许点击重试。
+  function loadLive(lat, lng, city, storeCode, attempts) {
     if (!BACKEND_URL) return;
+    attempts = attempts || 0;
     var params = [];
     if (lat != null && lng != null) { params.push("lat=" + lat); params.push("lng=" + lng); }
     if (city) params.push("city=" + encodeURIComponent(city));
     if (storeCode) params.push("storeCode=" + encodeURIComponent(storeCode));
     if (!params.length) return;
-    setDataSrc(isRetry ? "🔄 网络波动，正在重试实时拉取…" : "🔄 正在拉取当地门店实时菜单…");
+    setDataSrc(attempts > 0 ? "🔄 网络波动，正在重试（第 " + attempts + " 次）…" : "🔄 正在拉取当地门店实时菜单…");
     fetch(BACKEND_URL + "?" + params.join("&"), { mode: "cors" })
       .then(function (r) { return r.json(); })
       .then(function (d) {
@@ -150,8 +151,8 @@
         }
       })
       .catch(function () {
-        // 网络抖动/CORS 偶发失败：先自动重试一次，再失败给出可点击的重试入口
-        if (!isRetry) { loadLive(lat, lng, city, storeCode, true); return; }
+        // 网络抖动/网关单 IP 不可达：自动重试最多 2 次，再失败给出可点击的重试入口
+        if (attempts < 2) { loadLive(lat, lng, city, storeCode, attempts + 1); return; }
         setDataSrc("⚠️ 实时拉取失败（网络波动），已回退快照 · 点击这行字重试");
         var ds = document.getElementById("datasrc");
         if (ds) {
