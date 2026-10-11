@@ -55,43 +55,105 @@
     compute();
   }
   // 🎟️ 真实优惠 / 当前活动面板：全部来自官方 MCP（available-coupons / campaign-calendar），零编造
+  // 点击任意卡片 → 弹窗查看完整详情（大图 / 完整描述 / 领取状态）
+  function couponTag(c) {
+    return c.type === "free" ? "免费领" : c.type === "bogo" ? "买一送一" : c.type === "flat_item" ? ("¥" + (c.price || "") + "起") : "可领";
+  }
   function renderOffers() {
     var box = document.getElementById("offers");
     if (!box) return;
     var html = "";
     var realCoupons = (COUPONS || []).filter(function (c) { return c && c.kind === "coupon"; });
-    realCoupons.forEach(function (c) {
-      var tag = c.type === "free" ? "免费领" : c.type === "bogo" ? "买一送一" : c.type === "flat_item" ? ("¥" + (c.price || "") + "起") : "可领";
+    realCoupons.forEach(function (c, i) {
       var img = c.image ? '<img class="oimg" src="' + c.image + '" alt="' + (c.title || "") + '" loading="lazy" onerror="this.style.display=\'none\'">' : "";
-      html += '<div class="offer">' + img + '<div class="ot">' + (c.title || "") + '</div><div class="otag">' + tag + '</div></div>';
+      html += '<div class="offer" data-ci="' + i + '">' + img + '<div class="ot">' + (c.title || "") + '</div><div class="otag">' + couponTag(c) + '</div></div>';
     });
-    CAMPAIGNS.slice(0, 8).forEach(function (c) {
+    CAMPAIGNS.slice(0, 8).forEach(function (c, i) {
       var img = c.image ? '<img class="oimg" src="' + c.image + '" alt="' + (c.title || "") + '" loading="lazy" onerror="this.style.display=\'none\'">' : "";
       var desc = (c.desc || "").replace(/\n/g, " ");
       if (desc.length > 40) desc = desc.slice(0, 40) + "…";
-      html += '<div class="offer camp">' + img + '<div class="ot">' + (c.title || "") + '</div><div class="otag camp">当前活动</div>' + (desc ? '<div class="od">' + desc + '</div>' : '') + '</div>';
+      html += '<div class="offer camp" data-ai="' + i + '">' + img + '<div class="ot">' + (c.title || "") + '</div><div class="otag camp">当前活动</div>' + (desc ? '<div class="od">' + desc + '</div>' : '') + '</div>';
     });
     box.innerHTML = html || '<div class="odim">暂无可用优惠</div>';
   }
-  // 实时拉取：优先浏览器定位(lat/lng)，或城市选择(city)。失败/无数据则保持静态快照。
-  function loadLive(lat, lng, city) {
+  // 优惠详情弹窗
+  var modalBox = null;
+  function ensureModal() {
+    if (modalBox) return modalBox;
+    modalBox = document.createElement("div");
+    modalBox.className = "modal-mask";
+    modalBox.style.display = "none";
+    modalBox.innerHTML = '<div class="modal"><button class="modal-close" aria-label="关闭">✕</button><div class="modal-body"></div></div>';
+    document.body.appendChild(modalBox);
+    modalBox.addEventListener("click", function (e) {
+      if (e.target === modalBox || (e.target && e.target.classList && e.target.classList.contains("modal-close"))) modalBox.style.display = "none";
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && modalBox && modalBox.style.display !== "none") modalBox.style.display = "none"; });
+    return modalBox;
+  }
+  function openOfferModal(o, isCamp) {
+    var m = ensureModal();
+    var body = m.querySelector(".modal-body");
+    var html = "";
+    if (o.image) html += '<img class="modal-img" src="' + o.image + '" alt="' + (o.title || "") + '" onerror="this.style.display=\'none\'">';
+    html += '<div class="modal-tag' + (isCamp ? " camp" : "") + '">' + (isCamp ? "当前活动" : couponTag(o)) + '</div>';
+    html += '<div class="modal-title">' + (o.title || "") + '</div>';
+    if (isCamp && o.desc) html += '<div class="modal-desc">' + o.desc + '</div>';
+    if (!isCamp && o.status) html += '<div class="modal-desc">领取状态：' + o.status + '</div>';
+    html += '<div class="modal-src">数据来自麦当劳官方 MCP（' + (isCamp ? "campaign-calendar" : "available-coupons") + '）实时接口，领取方式与最终解释以麦当劳 App 实际为准</div>';
+    body.innerHTML = html;
+    m.style.display = "flex";
+  }
+  // 事件委托：offers 容器常驻，点卡片按 data 索引弹详情
+  (function bindOffers() {
+    var box = document.getElementById("offers");
+    if (!box) return;
+    box.addEventListener("click", function (e) {
+      var t = e.target;
+      var el = t && t.closest ? t.closest(".offer") : null;
+      if (!el) return;
+      var ci = el.getAttribute("data-ci"), ai = el.getAttribute("data-ai");
+      if (ci != null) {
+        var rc = (COUPONS || []).filter(function (c) { return c && c.kind === "coupon"; });
+        if (rc[+ci]) openOfferModal(rc[+ci], false);
+      } else if (ai != null) {
+        if (CAMPAIGNS[+ai]) openOfferModal(CAMPAIGNS[+ai], true);
+      }
+    });
+  })();
+  // 实时拉取：优先浏览器定位(lat/lng)，或城市选择(city)。失败自动重试一次，再失败回退快照并允许点击重试。
+  function loadLive(lat, lng, city, isRetry) {
     if (!BACKEND_URL) return;
     var params = [];
     if (lat != null && lng != null) { params.push("lat=" + lat); params.push("lng=" + lng); }
     if (city) params.push("city=" + encodeURIComponent(city));
     if (!params.length) return;
-    setDataSrc("🔄 正在拉取当地门店实时菜单…");
+    setDataSrc(isRetry ? "🔄 网络波动，正在重试实时拉取…" : "🔄 正在拉取当地门店实时菜单…");
     fetch(BACKEND_URL + "?" + params.join("&"), { mode: "cors" })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (d && d.items && d.items.length) {
           var s = (d.store && d.store.name) || "当地门店";
           applyMenu(d.items, d.coupons, "📍 实时 · " + s + " · 共 " + d.items.length + " 个在售餐品");
+        } else if (d && d.error) {
+          setDataSrc("⚠️ " + d.error + "，已回退快照");
         } else {
           setDataSrc("⚠️ 该地区暂无可售菜单，已回退快照");
         }
       })
-      .catch(function () { setDataSrc("⚠️ 实时拉取失败（检查后端地址/跨域），已回退快照"); });
+      .catch(function () {
+        // 网络抖动/CORS 偶发失败：先自动重试一次，再失败给出可点击的重试入口
+        if (!isRetry) { loadLive(lat, lng, city, true); return; }
+        setDataSrc("⚠️ 实时拉取失败（网络波动），已回退快照 · 点击这行字重试");
+        var ds = document.getElementById("datasrc");
+        if (ds) {
+          ds.style.cursor = "pointer";
+          ds.onclick = function () {
+            ds.onclick = null; ds.style.cursor = "";
+            loadLive(lat, lng, city);
+          };
+        }
+      });
   }
 
   var chipsEl = document.getElementById("chips");

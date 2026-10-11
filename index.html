@@ -224,6 +224,19 @@
   .otag.camp { background: #e08a2e; }
   .od { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 3px; line-height: 1.3; max-height: 2.6em; overflow: hidden; }
   .odim { font-size: 12px; color: var(--muted); font-weight: 700; }
+  .offer { cursor: pointer; transition: transform .12s ease; }
+  .offer:hover { transform: translateY(-2px); }
+
+  /* ===== 优惠详情弹窗 ===== */
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 99; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { position: relative; background: #fff; color: #2a2118; max-width: 360px; width: 100%; max-height: 82vh; overflow: auto; border-radius: 16px; padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+  .modal-close { position: absolute; top: 8px; right: 10px; border: none; background: rgba(0,0,0,.06); color: #555; width: 28px; height: 28px; border-radius: 50%; font-size: 13px; line-height: 1; cursor: pointer; }
+  .modal-img { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; background: #fff8ea; margin-bottom: 10px; display: block; }
+  .modal-tag { display: inline-block; font-size: 11px; font-weight: 900; color: #fff; background: var(--red); padding: 2px 9px; border-radius: 4px; }
+  .modal-tag.camp { background: #e08a2e; }
+  .modal-title { font-size: 17px; font-weight: 900; color: #1d1810; margin: 8px 0 6px; line-height: 1.35; }
+  .modal-desc { font-size: 13px; color: #4a4036; line-height: 1.6; white-space: pre-line; margin-top: 4px; }
+  .modal-src { font-size: 10.5px; color: #a2917c; margin-top: 12px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -309,7 +322,7 @@
   </div>
 
   <div class="offers-wrap">
-    <h3 class="offers-title">🎟️ 真实可用优惠 / 当前活动<span class="offers-sub">全部来自麦当劳官方 MCP（available-coupons / campaign-calendar）</span></h3>
+    <h3 class="offers-title">🎟️ 真实可用优惠 / 当前活动<span class="offers-sub">全部来自麦当劳官方 MCP · 点击卡片查看详情</span></h3>
     <div class="offers" id="offers"></div>
   </div>
 
