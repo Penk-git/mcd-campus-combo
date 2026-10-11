@@ -216,9 +216,15 @@
           '<div class="items">' + fmtItems(c.items) + '</div>' +
           '<div class="meta">' +
             '<span>份数 <b>' + c.qty + '</b></span>' +
-            '<span>热量 <b>' + c.energy + '</b> kcal</span>' +
-            '<span>蛋白 <b>' + c.protein + '</b> g</span>' +
+            '<span>热量 <b>' + c.energy + '</b> kcal<span class="mref">· 每日参考 ' + C.dailyPct(c.energy, c.protein).e + '%</span></span>' +
+            '<span>蛋白 <b>' + c.protein + '</b> g<span class="mref">· 每日参考 ' + C.dailyPct(c.energy, c.protein).p + '%</span></span>' +
+            (mode === "ppc" ? '<span>蛋白密度 <b>' + C.ppc(c).toFixed(2) + '</b> g/kcal</span>' : '') +
           '</div>' +
+          (function () {
+            var t = C.nutriTags(c, mode), tH = "";
+            if (t.length) tH = '<span class="ntags">' + t.map(function (x) { return '<span class="ntag">' + x + '</span>'; }).join("") + '</span>';
+            return '<div class="nutri">' + tH + '<span class="narr">' + C.nutriNarrative(c, mode) + '</span></div>';
+          })() +
         '</div>';
     });
     resultsEl.innerHTML = html;
@@ -226,7 +232,7 @@
     lastText = "【麦当劳校园省钱凑单 · " + current + "】预算¥" + budget + (cat && cat !== "不限" ? " · " + cat : "") + "\n" +
       top.map(function (c, i) {
         var items = c.items.map(function (it) { return it[0] + (it[1] > 1 ? "×" + it[1] : ""); }).join(" + ");
-        return (i + 1) + ". " + items + " = 实付¥" + c.payable + "（原价¥" + c.original + (c.coupon.id ? "，" + c.coupon.desc : "") + "），" + c.qty + "份/" + c.energy + "kcal/" + c.protein + "g蛋白";
+        return (i + 1) + ". " + items + " = 实付¥" + c.payable + "（原价¥" + c.original + (c.coupon.id ? "，" + c.coupon.desc : "") + "），" + c.qty + "份/" + c.energy + "kcal/" + c.protein + "g蛋白 — " + C.nutriNarrative(c, mode);
       }).join("\n");
   }
 

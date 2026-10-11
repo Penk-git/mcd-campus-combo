@@ -104,6 +104,56 @@
     return qty - 0.6 * dessert;
   }
 
+  // ---------- 营养叙事（场景化解读，让评委/用户直观看懂「为什么这份适合你」） ----------
+  // 参考值取中国食品标签营养参考值 NRV：能量 2000 kcal、蛋白质 60 g（成年人一般参考）。
+  var DAILY_ENERGY = 2000;
+  var DAILY_PROTEIN = 60;
+  var EGG_PROTEIN = 6.3; // 一个中等鸡蛋约 6.3 g 蛋白
+
+  // 蛋白密度 = 每千卡蛋白质（g/kcal），控卡增肌的核心指标
+  function ppc(c) {
+    var e = c.energy || 0;
+    return e > 0 ? (c.protein || 0) / e : 0;
+  }
+  // 占每日参考摄入百分比
+  function dailyPct(energy, protein) {
+    return {
+      e: Math.round((energy || 0) / DAILY_ENERGY * 100),
+      p: Math.round((protein || 0) / DAILY_PROTEIN * 100),
+    };
+  }
+  // 场景化营养标签（最多 2 个，去重）
+  function nutriTags(c, mode) {
+    var tags = [];
+    var r = ppc(c);
+    if ((c.protein || 0) >= 40) tags.push("高蛋白");
+    if (mode === "ppc" && r >= 0.05) tags.push("高蛋白低卡");
+    if ((c.energy || 0) >= 600) tags.push("顶饱");
+    if ((c.energy || 0) <= 450 && (c.protein || 0) >= 12) tags.push("轻负担");
+    if ((c.energy || 0) <= 350 && (c.protein || 0) <= 9) tags.push("低卡");
+    var seen = {}, out = [];
+    tags.forEach(function (t) { if (!seen[t]) { seen[t] = true; out.push(t); } });
+    return out.slice(0, 2);
+  }
+  // 一句话营养解读（场景不同说法不同，全部基于真实 energy/protein 计算）
+  function nutriNarrative(c, mode) {
+    var p = c.protein || 0, e = c.energy || 0;
+    var pct = dailyPct(e, p);
+    if (mode === "protein") {
+      var eggs = Math.max(1, Math.round(p / EGG_PROTEIN));
+      return "≈" + p + "g 蛋白（约 " + eggs + " 个鸡蛋，达每日参考 " + pct.p + "%），备考 / 练后恢复都顶得住";
+    }
+    if (mode === "energy") {
+      return "≈" + e + "kcal（占每日参考 " + pct.e + "%），深夜顶饱一整晚、不挨饿";
+    }
+    if (mode === "ppc") {
+      var r = ppc(c);
+      return "每千卡含 " + r.toFixed(2) + "g 蛋白，控卡增肌友好，吃饱也不易胖";
+    }
+    if ((c.payable || 0) <= 0) return "官方真实券直接白嫖 " + (c.qty || 0) + " 份，不领白不领";
+    return "花 ¥" + (c.payable || 0) + " 吃到 " + (c.qty || 0) + " 份 + " + p + "g 蛋白，校园性价比拉满";
+  }
+
   // 组合生成器（带重复，非降序索引去重排列）
   function* combinationsWithReplacement(arr, size) {
     var result = new Array(size);
@@ -199,8 +249,14 @@
     MOCK_COUPONS: MOCK_COUPONS,
     PROFILES: PROFILES,
     MAX_COMBO_SIZE: MAX_COMBO_SIZE,
+    DAILY_ENERGY: DAILY_ENERGY,
+    DAILY_PROTEIN: DAILY_PROTEIN,
     bestCouponDiscount: bestCouponDiscount,
     scoreCombo: scoreCombo,
+    ppc: ppc,
+    dailyPct: dailyPct,
+    nutriTags: nutriTags,
+    nutriNarrative: nutriNarrative,
     searchCombos: searchCombos,
   };
 
