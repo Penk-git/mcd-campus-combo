@@ -181,8 +181,29 @@ function nearestCity(lat, lng) {
   return best;
 }
 
-// ---------- 核心：按地区拉真实菜单 ----------
-async function buildMenuForLocation(token, lat, lng, city) {
+// ---------- 门店列表（供前端门店选择器） ----------
+async function listStores(token, lat, lng, city) {
+  const cli = createClient(token);
+  await cli.initialize();
+  if (!city && Number.isFinite(lat) && Number.isFinite(lng)) {
+    city = nearestCity(lat, lng);
+  }
+  const nearParams = { beType: 1, searchType: 2, latitude: lat, longitude: lng };
+  if (city) { nearParams.city = city; nearParams.keyword = city; }
+  const near = extractJson(textOf(await cli.callTool('query-nearby-stores', nearParams)));
+  const stores = (near && near.data) || [];
+  return stores.slice(0, 20)
+    .map((s) => ({
+      code: s.storeCode || s.storeNo || null,
+      name: s.storeName || s.name || null,
+      address: s.address || s.storeAddress || s.addr || null,
+      distance: s.distance || s.distanceMeter || s.dist || null,
+    }))
+    .filter((s) => s.code);
+}
+
+// ---------- 核心：按地区拉真实菜单（可指定门店 storeCode） ----------
+async function buildMenuForLocation(token, lat, lng, city, storeCode) {
   const cli = createClient(token);
   await cli.initialize();
 
@@ -191,35 +212,55 @@ async function buildMenuForLocation(token, lat, lng, city) {
     city = nearestCity(lat, lng);
   }
 
-  // 1) 附近门店
-  const nearParams = { beType: 1, searchType: 2, latitude: lat, longitude: lng };
-  if (city) { nearParams.city = city; nearParams.keyword = city; }
-  const nearTxt = textOf(await cli.callTool('query-nearby-stores', nearParams));
-  const near = extractJson(nearTxt);
-  const stores = (near && near.data) || [];
-  if (!stores.length) throw new Error('该坐标附近未找到麦当劳门店');
-
-  // 2) 逐个试 query-meals，挑营业中且能返回菜单的门店
   let chosen = null;
   let mealsData = null;
-  for (const st of stores) {
-    const sc = st.storeCode;
-    if (!sc) continue;
+
+  if (storeCode) {
+    // 指定门店：直接拉该店在售菜单；店名尽量从附近列表反查
+    chosen = { storeCode, storeName: '所选门店' };
     try {
-      const m = await cli.callTool('query-meals', { orderType: 1, storeCode: sc, beType: 1 });
-      const txt = textOf(m);
-      const obj = extractJson(txt);
-      const d = obj.data || {};
-      const meals = d.meals || {};
-      const n = Array.isArray(meals) ? meals.length : Object.keys(meals).length;
-      if (obj.success && n > 0) {
-        chosen = st;
-        mealsData = { d, meals };
-        break;
-      }
-    } catch (_) { /* 跳过这家 */ }
+      const nearParams = { beType: 1, searchType: 2, latitude: lat, longitude: lng };
+      if (city) { nearParams.city = city; nearParams.keyword = city; }
+      const near = extractJson(textOf(await cli.callTool('query-nearby-stores', nearParams)));
+      const hit = ((near && near.data) || []).find((s) => s.storeCode === storeCode);
+      if (hit && hit.storeName) chosen = { storeCode, storeName: hit.storeName };
+    } catch (_) { /* 名称反查失败不影响主流程 */ }
+    const m = await cli.callTool('query-meals', { orderType: 1, storeCode, beType: 1 });
+    const obj = extractJson(textOf(m));
+    const d = obj.data || {};
+    const meals = d.meals || {};
+    const n = Array.isArray(meals) ? meals.length : Object.keys(meals).length;
+    if (!(obj.success && n > 0)) throw new Error('所选门店当前未营业或无在售菜单');
+    mealsData = { d, meals };
+  } else {
+    // 1) 附近门店
+    const nearParams = { beType: 1, searchType: 2, latitude: lat, longitude: lng };
+    if (city) { nearParams.city = city; nearParams.keyword = city; }
+    const nearTxt = textOf(await cli.callTool('query-nearby-stores', nearParams));
+    const near = extractJson(nearTxt);
+    const stores = (near && near.data) || [];
+    if (!stores.length) throw new Error('该坐标附近未找到麦当劳门店');
+
+    // 2) 逐个试 query-meals，挑营业中且能返回菜单的门店
+    for (const st of stores) {
+      const sc = st.storeCode;
+      if (!sc) continue;
+      try {
+        const m = await cli.callTool('query-meals', { orderType: 1, storeCode: sc, beType: 1 });
+        const txt = textOf(m);
+        const obj = extractJson(txt);
+        const d = obj.data || {};
+        const meals = d.meals || {};
+        const n = Array.isArray(meals) ? meals.length : Object.keys(meals).length;
+        if (obj.success && n > 0) {
+          chosen = st;
+          mealsData = { d, meals };
+          break;
+        }
+      } catch (_) { /* 跳过这家 */ }
+    }
+    if (!chosen) throw new Error('附近门店当前均未营业或无在售菜单（深夜/非营业时段）');
   }
-  if (!chosen) throw new Error('附近门店当前均未营业或无在售菜单（深夜/非营业时段）');
 
   // 3) 解析餐品
   const codeTags = {};
@@ -435,11 +476,17 @@ exports.main = async (event, context) => {
   const lat = parseFloat(params.lat);
   const lng = parseFloat(params.lng);
   const city = params.city ? String(params.city) : null;
-  if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && !city) {
-    return { statusCode: 400, headers: corsHeaders(), body: JSON.stringify({ error: '需要 lat/lng 或 city 参数' }) };
+  const storeCode = params.storeCode ? String(params.storeCode) : null;
+  if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && !city && !storeCode) {
+    return { statusCode: 400, headers: corsHeaders(), body: JSON.stringify({ error: '需要 lat/lng、city 或 storeCode 参数' }) };
   }
   try {
-    const menu = await buildMenuForLocation(token, lat, lng, city);
+    // ?listStores=1 → 只返回附近门店列表（供前端门店选择器）
+    if (params.listStores) {
+      const stores = await listStores(token, lat, lng, city);
+      return { statusCode: 200, headers: corsHeaders(), body: JSON.stringify({ stores, city: city || null }) };
+    }
+    const menu = await buildMenuForLocation(token, lat, lng, city, storeCode);
     return { statusCode: 200, headers: corsHeaders(), body: JSON.stringify(menu) };
   } catch (e) {
     return { statusCode: 502, headers: corsHeaders(), body: JSON.stringify({ error: String(e && e.message || e) }) };
@@ -457,8 +504,9 @@ if (require.main === module) {
     const lat = parseFloat(get('--lat'));
     const lng = parseFloat(get('--lng'));
     const city = get('--city');
+    const sc = get('--store-code');
     if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && !city) {
-      console.error('用法: node index.js --lat 39.9 --lng 116.4 [--city 北京]');
+      console.error('用法: node index.js --lat 39.9 --lng 116.4 [--city 北京] [--list-stores] [--store-code 5170027]');
       process.exit(1);
     }
     if (!process.env.MCD_MCP_TOKEN) {
@@ -466,7 +514,12 @@ if (require.main === module) {
       process.exit(1);
     }
     try {
-      const menu = await buildMenuForLocation(process.env.MCD_MCP_TOKEN, lat, lng, city);
+      if (get('--list-stores') !== null) {
+        const stores = await listStores(process.env.MCD_MCP_TOKEN, lat, lng, city);
+        console.log(JSON.stringify(stores, null, 2));
+        return;
+      }
+      const menu = await buildMenuForLocation(process.env.MCD_MCP_TOKEN, lat, lng, city, sc);
       console.log(JSON.stringify(menu, null, 2));
     } catch (e) {
       console.error('ERROR:', e.message);

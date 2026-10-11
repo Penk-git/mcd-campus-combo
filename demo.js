@@ -121,12 +121,14 @@
       }
     });
   })();
-  // 实时拉取：优先浏览器定位(lat/lng)，或城市选择(city)。失败自动重试一次，再失败回退快照并允许点击重试。
-  function loadLive(lat, lng, city, isRetry) {
+  // 实时拉取：优先浏览器定位(lat/lng)，或城市选择(city)，或指定门店(storeCode)。
+  // 失败自动重试一次，再失败回退快照并允许点击重试。
+  function loadLive(lat, lng, city, storeCode, isRetry) {
     if (!BACKEND_URL) return;
     var params = [];
     if (lat != null && lng != null) { params.push("lat=" + lat); params.push("lng=" + lng); }
     if (city) params.push("city=" + encodeURIComponent(city));
+    if (storeCode) params.push("storeCode=" + encodeURIComponent(storeCode));
     if (!params.length) return;
     setDataSrc(isRetry ? "🔄 网络波动，正在重试实时拉取…" : "🔄 正在拉取当地门店实时菜单…");
     fetch(BACKEND_URL + "?" + params.join("&"), { mode: "cors" })
@@ -135,6 +137,12 @@
         if (d && d.items && d.items.length) {
           var s = (d.store && d.store.name) || "当地门店";
           applyMenu(d.items, d.coupons, "📍 实时 · " + s + " · 共 " + d.items.length + " 个在售餐品");
+          // 自动选择模式下，把后端实际选中的门店回填到门店下拉框
+          if (storeSel && d.store && d.store.code) {
+            for (var i = 0; i < storeSel.options.length; i++) {
+              if (storeSel.options[i].value === d.store.code) { storeSel.selectedIndex = i; break; }
+            }
+          }
         } else if (d && d.error) {
           setDataSrc("⚠️ " + d.error + "，已回退快照");
         } else {
@@ -143,14 +151,14 @@
       })
       .catch(function () {
         // 网络抖动/CORS 偶发失败：先自动重试一次，再失败给出可点击的重试入口
-        if (!isRetry) { loadLive(lat, lng, city, true); return; }
+        if (!isRetry) { loadLive(lat, lng, city, storeCode, true); return; }
         setDataSrc("⚠️ 实时拉取失败（网络波动），已回退快照 · 点击这行字重试");
         var ds = document.getElementById("datasrc");
         if (ds) {
           ds.style.cursor = "pointer";
           ds.onclick = function () {
             ds.onclick = null; ds.style.cursor = "";
-            loadLive(lat, lng, city);
+            loadLive(lat, lng, city, storeCode);
           };
         }
       });
@@ -182,16 +190,59 @@
     chipsEl.appendChild(b);
   });
 
-  // 定位 UI 接线（方案 B）：📍 用我的位置 → 浏览器定位；城市下拉 → 按城市
+  // 定位 UI 接线（方案 B）：📍 用我的位置 → 浏览器定位；城市下拉 → 按城市；门店下拉 → 指定门店
   var locBtn = document.getElementById("locBtn");
   var citySel = document.getElementById("city");
+  var storeSel = document.getElementById("store");
+  var lastCoords = null; // 最近一次定位坐标（切门店时传给后端用于店名反查）
+
+  // 拉附近门店列表填充门店下拉框（失败不阻塞，保持"自动选择"）
+  function fillStores(list) {
+    if (!storeSel) return;
+    storeSel.innerHTML = '<option value="">🏪 门店：自动选择最近营业店</option>';
+    (list || []).forEach(function (s) {
+      var o = document.createElement("option");
+      o.value = s.code;
+      var label = s.name || ("门店 " + s.code);
+      if (s.distance) label += "（" + (s.distance >= 1000 ? (s.distance / 1000).toFixed(1) + "km" : s.distance + "m") + "）";
+      if (s.address) label += " " + s.address;
+      o.textContent = label;
+      storeSel.appendChild(o);
+    });
+    storeSel.disabled = !(list && list.length);
+  }
+  function loadStores(lat, lng, city) {
+    if (!BACKEND_URL || !storeSel) return;
+    var params = ["listStores=1"];
+    if (lat != null && lng != null) { params.push("lat=" + lat); params.push("lng=" + lng); }
+    if (city) params.push("city=" + encodeURIComponent(city));
+    storeSel.disabled = true;
+    fetch(BACKEND_URL + "?" + params.join("&"), { mode: "cors" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { fillStores(d && d.stores); })
+      .catch(function () { storeSel.disabled = false; });
+  }
+
   if (citySel) {
     CITY_LIST.forEach(function (c) {
       var o = document.createElement("option");
       o.value = c; o.textContent = c;
       citySel.appendChild(o);
     });
-    citySel.onchange = function () { if (citySel.value) loadLive(null, null, citySel.value); };
+    citySel.onchange = function () {
+      if (!citySel.value) return;
+      lastCoords = null;
+      loadStores(null, null, citySel.value);
+      loadLive(null, null, citySel.value, null);
+    };
+  }
+  if (storeSel) {
+    storeSel.onchange = function () {
+      var city = citySel && citySel.value ? citySel.value : null;
+      var lat = lastCoords ? lastCoords.lat : null;
+      var lng = lastCoords ? lastCoords.lng : null;
+      loadLive(lat, lng, city, storeSel.value || null);
+    };
   }
   if (locBtn) {
     locBtn.onclick = function () {
@@ -199,11 +250,16 @@
       if (!navigator.geolocation) { alert("当前浏览器不支持定位，请改用城市选择"); return; }
       locBtn.textContent = "📍 定位中…";
       navigator.geolocation.getCurrentPosition(function (pos) {
-        loadLive(pos.coords.latitude, pos.coords.longitude, null);
+        lastCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        loadStores(pos.coords.latitude, pos.coords.longitude, null);
+        loadLive(pos.coords.latitude, pos.coords.longitude, null, null);
         locBtn.textContent = "📍 用我的位置";
       }, function () {
         locBtn.textContent = "📍 用我的位置";
-        if (citySel && citySel.value) loadLive(null, null, citySel.value);
+        if (citySel && citySel.value) {
+          loadStores(null, null, citySel.value);
+          loadLive(null, null, citySel.value, null);
+        }
       }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
     };
   }
