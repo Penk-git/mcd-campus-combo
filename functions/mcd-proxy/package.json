@@ -1,0 +1,7 @@
+{
+  "name": "mcd-proxy",
+  "version": "1.0.0",
+  "description": "麦当劳校园省钱凑单 - 后端代理云函数（Nodejs18，零依赖，服务端持有 MCD_MCP_TOKEN）",
+  "main": "index.js",
+  "dependencies": {}
+}

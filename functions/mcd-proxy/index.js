@@ -289,19 +289,77 @@ function corsHeaders() {
   };
 }
 
+function firstVal(v) {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+function parseRawQuery(qs) {
+  const out = {};
+  if (!qs || typeof qs !== 'string') return out;
+  for (const kv of qs.replace(/^\?/, '').split('&')) {
+    if (!kv) continue;
+    const i = kv.indexOf('=');
+    const k = i === -1 ? kv : kv.slice(0, i);
+    const v = i === -1 ? '' : kv.slice(i + 1);
+    try { out[decodeURIComponent(k)] = decodeURIComponent(v); }
+    catch (_) { out[k] = v; }
+  }
+  return out;
+}
+
+// CloudBase「HTTP 访问服务」转发给 SCF 的 event 结构随版本/接入方式而异：
+// 这里同时兼容 API 网关 v1 风格(queryString/httpMethod) 与 HTTP API v2 风格
+// (rawQueryString/queryStringParameters/requestContext.http.method)，
+// 并对「云函数直调 / 控制台测试」做兜底。
 function parseEvent(event) {
-  // CloudBase HTTP 函数 event 形态：{ httpMethod, queryString, body, headers }
-  const method = (event && event.httpMethod) || 'GET';
-  let params = {};
-  if (event && event.queryString && typeof event.queryString === 'object') {
-    params = Object.assign({}, event.queryString);
+  const ev = (event && typeof event === 'object') ? event : {};
+  let method = ev.httpMethod
+    || (ev.requestContext && ev.requestContext.http && ev.requestContext.http.method)
+    || 'GET';
+  method = String(method).toUpperCase();
+
+  const params = {};
+
+  // 1) 原始 query 串（v2 风格）
+  let rawQ = ev.rawQueryString;
+  if (!rawQ) {
+    const p = ev.rawPath || ev.path
+      || (ev.requestContext && ev.requestContext.http && ev.requestContext.http.path);
+    if (typeof p === 'string' && p.includes('?')) rawQ = p.slice(p.indexOf('?') + 1);
   }
-  if ((method === 'POST') && event && event.body) {
+  Object.assign(params, parseRawQuery(rawQ));
+
+  // 2) 显式 query 对象（v1 风格，优先级更高）
+  for (const key of ['queryStringParameters', 'queryString', 'query']) {
+    const obj = ev[key];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      for (const [k, v] of Object.entries(obj)) params[k] = firstVal(v);
+    }
+  }
+
+  // 3) body（POST：JSON 或表单）
+  let body = ev.body;
+  if (typeof body === 'string' && body) {
+    if (ev.isBase64Encoded) {
+      try { body = Buffer.from(body, 'base64').toString('utf8'); } catch (_) { /* ignore */ }
+    }
     try {
-      const b = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
-      if (b && typeof b === 'object') params = Object.assign(params, b);
-    } catch (_) { /* ignore */ }
+      const b = JSON.parse(body);
+      if (b && typeof b === 'object') Object.assign(params, b);
+    } catch (_) {
+      Object.assign(params, parseRawQuery(body));
+    }
+  } else if (body && typeof body === 'object') {
+    Object.assign(params, body);
   }
+
+  // 4) 兜底：event 本身即参数（云函数直调 / 控制台测试 event）
+  if (params.lat === undefined && params.lng === undefined && params.city === undefined) {
+    if (ev.lat !== undefined || ev.lng !== undefined || ev.city !== undefined) {
+      Object.assign(params, ev);
+    }
+  }
+
   return { method, params };
 }
 
@@ -309,6 +367,29 @@ exports.main = async (event, context) => {
   const { method, params } = parseEvent(event);
   if (method === 'OPTIONS') {
     return { statusCode: 204, headers: corsHeaders(), body: '' };
+  }
+  // 探针：?__debug=1 原样回显 event 结构（headers 脱敏，避免回显凭据）
+  if (params.__debug) {
+    const safeEvent = Object.assign({}, event);
+    if (safeEvent.headers && typeof safeEvent.headers === 'object') {
+      const redacted = {};
+      for (const k of Object.keys(safeEvent.headers)) {
+        redacted[k] = /^(x-cloudbase-context|x-cloudbase-signature|authorization|cookie)$/i.test(k)
+          ? '<redacted>' : safeEvent.headers[k];
+      }
+      safeEvent.headers = redacted;
+    }
+    return {
+      statusCode: 200,
+      headers: corsHeaders(),
+      body: JSON.stringify({
+        _debug: true,
+        method,
+        params,
+        eventKeys: Object.keys(event || {}),
+        event: safeEvent,
+      }),
+    };
   }
   const token = process.env.MCD_MCP_TOKEN;
   if (!token) {

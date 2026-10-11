@@ -1,35 +1,24 @@
 {
-  "envId": "{{CLOUDBASE_ENV_ID}}",
-  "framework": {
-    "name": "mcd-campus-combo",
-    "plugins": {
-      "static": {
-        "use": "@cloudbase/framework-plugin-website",
-        "inputs": {
-          "outputPath": ".",
-          "cloudPath": "/",
-          "ignore": [
-            "functions/**",
-            "*.py",
-            "node_modules/**",
-            ".git/**"
-          ]
-        }
+  "envId": "cloud1-d3g3n612g3037e59b",
+  "functionRoot": "functions",
+  "functions": [
+    {
+      "name": "mcd-proxy",
+      "timeout": 30,
+      "memorySize": 256,
+      "runtime": "Nodejs18.15",
+      "installDependency": false,
+      "handler": "index.main",
+      "envVariables": {
+        "MCD_MCP_TOKEN": ""
       },
-      "mcd-proxy": {
-        "use": "@cloudbase/framework-plugin-function",
-        "inputs": {
-          "name": "mcd-proxy",
-          "path": "/mcd-proxy",
-          "functionRoot": "functions/mcd-proxy",
-          "runtime": "Nodejs18.15",
-          "timeout": 30,
-          "memorySize": 256,
-          "envVariables": {
-            "MCD_MCP_TOKEN": ""
-          }
+      "triggers": [
+        {
+          "name": "http",
+          "type": "http",
+          "config": "{\"methods\":[\"GET\",\"POST\",\"OPTIONS\"]}"
         }
-      }
+      ]
     }
-  }
+  ]
 }

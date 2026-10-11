@@ -216,30 +216,79 @@ for it in items:
             dc[t] += 1
 print("派生校园标签覆盖:", dict(dc))
 
-# 3) 优惠券（best-effort，失败则留空，算法降级为“无可用券”）
-coupons = []
-for cparams in [{}, {"storeCode": primary["code"], "orderType": 1, "beType": 1}]:
-    try:
-        ctext = _text_of(cli.call_tool("query-store-coupons", cparams))
-        cj = extract_json(ctext)
-        raw = cj.get("data") or []
-        if isinstance(raw, list) and raw:
-            for c in raw:
-                if isinstance(c, dict):
-                    coupons.append({"id": c.get("couponId") or c.get("id"),
-                                    "desc": c.get("couponName") or c.get("name") or c.get("desc"),
-                                    "raw": c})
-            break
-    except Exception:
-        continue
-print(f"门店可用券: {len(coupons)} 条")
+# 3) 真实优惠券与限时活动（消除 mock 券硬伤：全部来自官方 MCP 真实返回）
+import re
+
+
+def parse_available_coupons(raw):
+    """available-coupons 返回 Markdown 列表，解析为结构化券。"""
+    coupons = []
+    titles = re.findall(r"优惠券标题：([^\n\\]+)", raw)
+    for t in titles:
+        t = t.strip()
+        if not t:
+            continue
+        c = {"title": t, "type": "info", "match": None}
+        m = re.search(r"免费(.+?)(?:$|（|\(|\s|·)", t)
+        if m:
+            c["type"] = "free"; c["match"] = m.group(1).strip()
+        elif "买一送一" in t:
+            mm = re.search(r"(.+?)买一送一", t)
+            c["type"] = "bogo"; c["match"] = (mm.group(1).strip() if mm else None)
+        else:
+            pm = re.search(r"(\d+(?:\.\d+)?)元(.+)$", t)
+            if pm:
+                c["type"] = "flat_item"; c["price"] = float(pm.group(1)); c["match"] = pm.group(2).strip()
+        coupons.append(c)
+    seen = set(); uniq = []
+    for c in coupons:
+        if c["title"] not in seen:
+            seen.add(c["title"]); uniq.append(c)
+    return uniq
+
+
+def parse_campaigns(raw):
+    """campaign-calendar 返回 Markdown，解析为限时活动列表。"""
+    titles = re.findall(r"活动标题\*\*：([^\n]+)", raw)
+    descs = re.findall(r"活动内容介绍\*\*：([^\n]+)", raw)
+    out = []
+    for i, ti in enumerate(titles):
+        out.append({"title": ti.strip(), "desc": (descs[i].strip() if i < len(descs) else "")})
+    return out
+
+
+coupons = parse_available_coupons(_text_of(cli.call_tool("available-coupons", {})))
+print(f"真实可领券(available-coupons): {len(coupons)} 条")
+for c in coupons:
+    print(f"  - [{c['type']}] {c['title']}" + (f" 匹配={c['match']}" if c.get("match") else ""))
+
+# 补拉门店专属券（部分门店有；无则忽略）
+try:
+    sc_text = _text_of(cli.call_tool("query-store-coupons", {"storeCode": primary["code"], "orderType": 1, "beType": 1}))
+    sc_json = extract_json(sc_text)
+    sc_data = sc_json.get("data") or []
+    if isinstance(sc_data, list) and sc_data:
+        for c in sc_data:
+            if isinstance(c, dict):
+                coupons.append({"title": c.get("title") or c.get("couponName") or "门店券", "type": "store", "match": None})
+        print(f"门店专属券: {len(sc_data)} 条（已并入）")
+except Exception as e:
+    print("门店券拉取跳过:", repr(e))
+
+# 限时活动（campaign-calendar）
+camp_text = _text_of(cli.call_tool("campaign-calendar", {}))
+campaigns = parse_campaigns(camp_text)
+print(f"限时活动(campaign-calendar): {len(campaigns)} 条")
+for c in campaigns[:6]:
+    print(f"  - {c['title']}")
 
 out = {
-    "source": "McDonald's China MCP (query-nearby-stores + query-meals + list-nutrition-foods + query-store-coupons)",
+    "source": "McDonald's China MCP (query-nearby-stores + query-meals + list-nutrition-foods + available-coupons + campaign-calendar + query-store-coupons)",
     "store": {"code": primary["code"], "name": primary["name"], "store_count": len(store_meta)},
     "order_type": 1,
     "items": items,
     "coupons": coupons,
+    "campaigns": campaigns,
 }
 with open("real_menu.json", "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=2)

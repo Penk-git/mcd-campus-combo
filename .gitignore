@@ -1,0 +1,9 @@
+# 部署副本与临时文件（不纳入版本控制）
+# CloudBase Hosting 只部署 public/ 目录，因此源文件不会被公开上传，无需在此排除
+public/
+node_modules/
+.git/
+*.log
+test_*.js
+build_*.py
+verify_*.js
