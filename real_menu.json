@@ -1,15 +1,16 @@
 {
   "source": "McDonald's China MCP (query-nearby-stores + query-meals + list-nutrition-foods + query-store-coupons)",
   "store": {
-    "code": "5170027",
-    "name": "麦当劳兰州兰石豪布斯卡餐厅"
+    "code": "5170022",
+    "name": "麦当劳兰州西客站餐厅",
+    "store_count": 5
   },
   "order_type": 1,
   "items": [
     {
       "code": "9900005456",
       "name": "麦辣鸡腿汉堡三件套",
-      "price": 34.0,
+      "price": 49.0,
       "tags": [
         "套餐",
         "立省10.5元起",
@@ -24,7 +25,7 @@
     {
       "code": "511781",
       "name": "培根安格斯厚牛堡",
-      "price": 34.5,
+      "price": 39.0,
       "tags": [
         "单品",
         "100%安格斯牛肉",
@@ -39,7 +40,7 @@
     {
       "code": "521906",
       "name": "玫瑰红糖糍粑风味派",
-      "price": 5.0,
+      "price": 11.0,
       "tags": [
         "上新",
         "玫瑰花香",
@@ -47,14 +48,14 @@
         "甜品"
       ],
       "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_521906_320.png",
-      "discountType": "促销优惠",
+      "discountType": null,
       "energy": 0,
       "protein": 0
     },
     {
       "code": "511782",
       "name": "芝士安格斯厚牛堡",
-      "price": 31.5,
+      "price": 35.5,
       "tags": [
         "单品",
         "100%安格斯牛肉",
@@ -70,7 +71,7 @@
     {
       "code": "521741",
       "name": "脆薯饼",
-      "price": 8.0,
+      "price": 9.0,
       "tags": [
         "小食",
         "早餐",
@@ -84,7 +85,7 @@
     {
       "code": "2430",
       "name": "【美汁源】“黄金橙橙”",
-      "price": 13.0,
+      "price": 15.0,
       "tags": [
         "冷饮",
         "饮品"
@@ -97,7 +98,7 @@
     {
       "code": "521986",
       "name": "马苏里拉拉丝芝士条",
-      "price": 11.0,
+      "price": 16.0,
       "tags": [
         "上新",
         "趁热拉丝",
@@ -105,14 +106,27 @@
         "小吃"
       ],
       "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G521986_320.png",
-      "discountType": "促销优惠",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900011056",
+      "name": "全明星双人分享餐八件套",
+      "price": 49.9,
+      "tags": [
+        "麦金卡",
+        "正餐"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900011056_320.gif",
+      "discountType": "随单购麦金卡优惠",
       "energy": 0,
       "protein": 0
     },
     {
       "code": "9900016076",
       "name": "“我就喜欢”鸡薯双全盒",
-      "price": 15.9,
+      "price": 31.0,
       "tags": [
         "上新",
         "心形薯饼同款比心",
@@ -126,9 +140,21 @@
       "protein": 0
     },
     {
+      "code": "521871",
+      "name": "美禄可可雪冰",
+      "price": 27.0,
+      "tags": [
+        "限定特惠"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_521871_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
       "code": "9900016075",
       "name": "龙焰芝士棒鸡腿堡三件套",
-      "price": 29.9,
+      "price": 56.0,
       "tags": [
         "上新",
         "浓郁奶香拉丝芝士",
@@ -145,7 +171,7 @@
     {
       "code": "9900016073",
       "name": "龙焰鸡腿堡三件套",
-      "price": 26.9,
+      "price": 53.0,
       "tags": [
         "上新",
         "韩式辣椒黄油风味",
@@ -160,7 +186,7 @@
     {
       "code": "9900005460",
       "name": "麦香鱼套餐",
-      "price": 33.5,
+      "price": 50.5,
       "tags": [
         "套餐",
         "麦香鱼系列",
@@ -175,7 +201,7 @@
     {
       "code": "9900005462",
       "name": "板烧鸡腿堡三件套",
-      "price": 35.0,
+      "price": 52.5,
       "tags": [
         "套餐",
         "新升级",
@@ -191,7 +217,7 @@
     {
       "code": "3755",
       "name": "纯牛奶(盒装)",
-      "price": 10.5,
+      "price": 12.5,
       "tags": [
         "冷饮",
         "正餐",
@@ -206,7 +232,7 @@
     {
       "code": "9900005464",
       "name": "双层吉士汉堡套餐",
-      "price": 34.0,
+      "price": 50.0,
       "tags": [
         "套餐",
         "100%纯牛肉",
@@ -232,22 +258,9 @@
       "protein": 0
     },
     {
-      "code": "3757",
-      "name": "纯悦",
-      "price": 7.5,
-      "tags": [
-        "冷饮",
-        "饮品"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20240904/product/MS_3757_320.png",
-      "discountType": null,
-      "energy": 0.0,
-      "protein": 0.0
-    },
-    {
       "code": "9900005466",
       "name": "巨无霸三件套",
-      "price": 37.0,
+      "price": 54.5,
       "tags": [
         "套餐",
         "100%纯牛肉",
@@ -275,7 +288,7 @@
     {
       "code": "6362",
       "name": "100% 苹果汁(盒装)",
-      "price": 11.5,
+      "price": 12.5,
       "tags": [
         "冷饮",
         "正餐",
@@ -289,14 +302,31 @@
     {
       "code": "521917",
       "name": "泷愿成真麦旋风——大米风味",
-      "price": 16.0,
+      "price": 17.5,
       "tags": [
         "上新",
         "快乐旋开吃",
         "饮品",
         "甜品"
       ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G521917_320.gif",
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_521917_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900014838",
+      "name": "枫糖风味厚松饼猪柳蛋堡三件套",
+      "price": 43.0,
+      "tags": [
+        "全球爆款",
+        "全天供应",
+        "含蛋",
+        "正餐",
+        "含肉",
+        "甜品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900014838_320_1.png",
       "discountType": null,
       "energy": 0,
       "protein": 0
@@ -304,7 +334,7 @@
     {
       "code": "9900005449",
       "name": "吉士汉堡包套餐",
-      "price": 26.0,
+      "price": 45.0,
       "tags": [
         "套餐",
         "100%纯牛肉",
@@ -319,7 +349,7 @@
     {
       "code": "9900014837",
       "name": "枫糖风味厚松饼猪柳蛋堡三件套",
-      "price": 27.9,
+      "price": 43.0,
       "tags": [
         "经典精选",
         "全球爆款",
@@ -329,7 +359,7 @@
         "含肉",
         "甜品"
       ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900014837_320.png",
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900014837_320_1.png",
       "discountType": null,
       "energy": 0,
       "protein": 0
@@ -337,7 +367,7 @@
     {
       "code": "9900015008",
       "name": "酥酥多笋卷三件套",
-      "price": 32.0,
+      "price": 47.0,
       "tags": [
         "套餐",
         "全新升级",
@@ -352,7 +382,7 @@
     {
       "code": "3010",
       "name": "雪碧",
-      "price": 9.5,
+      "price": 11.0,
       "tags": [
         "冷饮",
         "饮品"
@@ -379,7 +409,7 @@
     {
       "code": "1106",
       "name": "培根蔬萃双层牛堡",
-      "price": 24.5,
+      "price": 26.5,
       "tags": [
         "单品",
         "100%纯牛肉",
@@ -394,7 +424,7 @@
     {
       "code": "1100",
       "name": "巨无霸",
-      "price": 26.0,
+      "price": 29.0,
       "tags": [
         "单品",
         "100%纯牛肉",
@@ -406,21 +436,9 @@
       "protein": 27.0
     },
     {
-      "code": "506189",
-      "name": "如意百宝袋",
-      "price": 12.0,
-      "tags": [
-        "其他"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_506189_320.png",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
       "code": "9900005451",
       "name": "麦辣鸡翅4块套餐",
-      "price": 36.5,
+      "price": 55.0,
       "tags": [
         "套餐",
         "立省10.5元起",
@@ -436,7 +454,7 @@
     {
       "code": "9900005453",
       "name": "麦香鸡套餐",
-      "price": 28.0,
+      "price": 45.0,
       "tags": [
         "套餐",
         "立省10.5元起",
@@ -449,9 +467,24 @@
       "protein": 15.0
     },
     {
+      "code": "507394",
+      "name": "牛奶",
+      "price": 23.0,
+      "tags": [
+        "其他",
+        "正餐",
+        "含肉",
+        "饮品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G5073941_320.png",
+      "discountType": null,
+      "energy": 129.0,
+      "protein": 7.0
+    },
+    {
       "code": "9900008746",
       "name": "鸡肉堡单品精选",
-      "price": 24.0,
+      "price": 27.0,
       "tags": [
         "单品",
         "人气",
@@ -466,7 +499,7 @@
     {
       "code": "9900008745",
       "name": "新地",
-      "price": 13.0,
+      "price": 14.5,
       "tags": [
         "冰淇淋",
         "饮品",
@@ -480,7 +513,7 @@
     {
       "code": "9900008747",
       "name": "牛肉堡单品精选",
-      "price": 14.0,
+      "price": 15.5,
       "tags": [
         "单品",
         "100%纯牛肉",
@@ -495,7 +528,7 @@
     {
       "code": "515520",
       "name": "怡泉+C",
-      "price": 11.5,
+      "price": 13.5,
       "tags": [
         "冷饮",
         "饮品"
@@ -508,7 +541,7 @@
     {
       "code": "1120",
       "name": "双层吉士汉堡",
-      "price": 23.0,
+      "price": 26.5,
       "tags": [
         "单品",
         "100%纯牛肉",
@@ -521,9 +554,35 @@
       "protein": 27.0
     },
     {
+      "code": "9900015168",
+      "name": "麦麦周末双人餐",
+      "price": 69.9,
+      "tags": [
+        "多人餐",
+        "全球爆款",
+        "全天供应"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900015168_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "520361",
+      "name": "奶铁雪冰",
+      "price": 27.0,
+      "tags": [
+        "麦咖啡™咖啡"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250324/product/MS_G520361_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
       "code": "9900008751",
       "name": "可乐",
-      "price": 9.5,
+      "price": 11.0,
       "tags": [
         "冷饮",
         "饮品"
@@ -536,7 +595,7 @@
     {
       "code": "9900006332",
       "name": "薄皮V翅双拼十翅",
-      "price": 49.9,
+      "price": 61.0,
       "tags": [
         "小食拼盘",
         "超值"
@@ -549,7 +608,7 @@
     {
       "code": "9900008752",
       "name": "派",
-      "price": 8.5,
+      "price": 9.5,
       "tags": [
         "派",
         "第二份优惠",
@@ -562,23 +621,9 @@
       "protein": 2.0
     },
     {
-      "code": "9900008754",
-      "name": "经典麦旋风",
-      "price": 15.0,
-      "tags": [
-        "冰淇淋",
-        "饮品",
-        "甜品"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008754_320.gif",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
       "code": "9900005468",
       "name": "培根蔬萃双层牛堡三件套",
-      "price": 35.5,
+      "price": 52.0,
       "tags": [
         "套餐",
         "100%纯牛肉",
@@ -591,9 +636,23 @@
       "protein": 24.0
     },
     {
+      "code": "521739",
+      "name": "意式辣番茄风味摇滚薯-脆脆薯条",
+      "price": 20.5,
+      "tags": [
+        "小食",
+        "我就喜欢代言人同款",
+        "小吃"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260701/product/MS_521739_320.png",
+      "discountType": null,
+      "energy": 279.0,
+      "protein": 4.0
+    },
+    {
       "code": "514782",
       "name": "脆脆薯条",
-      "price": 16.0,
+      "price": 17.0,
       "tags": [
         "小食",
         "小吃"
@@ -620,7 +679,7 @@
     {
       "code": "521730",
       "name": "枫糖风味厚松饼猪柳蛋堡",
-      "price": 22.0,
+      "price": 23.0,
       "tags": [
         "单品",
         "全球爆款",
@@ -638,7 +697,7 @@
     {
       "code": "521731",
       "name": "枫糖风味厚松饼猪柳堡",
-      "price": 18.0,
+      "price": 19.0,
       "tags": [
         "单品",
         "全球爆款",
@@ -655,7 +714,7 @@
     {
       "code": "9900014974",
       "name": "枫糖风味厚松饼猪柳堡三件套",
-      "price": 23.9,
+      "price": 39.0,
       "tags": [
         "经典精选",
         "全球爆款",
@@ -664,7 +723,7 @@
         "含肉",
         "甜品"
       ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900014974_320.png",
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900014974_320_1.png",
       "discountType": null,
       "energy": 0,
       "protein": 0
@@ -672,9 +731,11 @@
     {
       "code": "1401",
       "name": "麦乐鸡",
-      "price": 14.5,
+      "price": 15.5,
       "tags": [
         "单品",
+        "喜欢您来玩",
+        "金黄酥脆",
         "人气",
         "正餐",
         "含肉"
@@ -683,20 +744,6 @@
       "discountType": null,
       "energy": 213.0,
       "protein": 12.0
-    },
-    {
-      "code": "9900015151",
-      "name": "麦麦周末双人餐",
-      "price": 49.9,
-      "tags": [
-        "多人餐",
-        "全球爆款",
-        "全天供应"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900015151_320.gif",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
     },
     {
       "code": "9900016082",
@@ -717,7 +764,7 @@
     {
       "code": "1406",
       "name": "板烧鸡腿堡",
-      "price": 24.0,
+      "price": 27.0,
       "tags": [
         "单品",
         "板烧滋滋",
@@ -733,7 +780,7 @@
     {
       "code": "9900005413",
       "name": "双层深海鳕鱼堡三件套",
-      "price": 35.0,
+      "price": 53.5,
       "tags": [
         "套餐",
         "麦香鱼系列",
@@ -762,7 +809,7 @@
     {
       "code": "9900015856",
       "name": "“泷”运当头四件套",
-      "price": 91.7,
+      "price": 103.95,
       "tags": [
         "经典精选",
         "汪苏泷限量周边"
@@ -775,7 +822,7 @@
     {
       "code": "9900015730",
       "name": "BFF四宫格小食盘",
-      "price": 39.8,
+      "price": 59.0,
       "tags": [
         "小食拼盘",
         "随心拼",
@@ -805,7 +852,7 @@
     {
       "code": "521156",
       "name": "那么大鸡排（椒盐风味）",
-      "price": 14.0,
+      "price": 15.0,
       "tags": [
         "单品",
         "正餐",
@@ -819,7 +866,7 @@
     {
       "code": "9900004835",
       "name": "麦乐鸡套餐",
-      "price": 25.5,
+      "price": 40.5,
       "tags": [
         "套餐",
         "立省10.5元起",
@@ -832,9 +879,21 @@
       "protein": 0
     },
     {
+      "code": "510488",
+      "name": "燕麦奶",
+      "price": 25.0,
+      "tags": [
+        "其他"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G510489_320.png",
+      "discountType": null,
+      "energy": 132.0,
+      "protein": 3.0
+    },
+    {
       "code": "4648",
       "name": "不素之霸双层牛堡",
-      "price": 26.5,
+      "price": 29.5,
       "tags": [
         "单品",
         "100%纯牛肉",
@@ -849,10 +908,10 @@
     {
       "code": "9900005421",
       "name": "鱼排堡开心乐园餐",
-      "price": 24.0,
+      "price": 29.0,
       "tags": [
-        "开心乐园餐",
         "童年童款",
+        "开心乐园餐",
         "正餐",
         "含肉"
       ],
@@ -864,7 +923,7 @@
     {
       "code": "9900003586",
       "name": "双层深海鳕鱼堡",
-      "price": 24.0,
+      "price": 28.0,
       "tags": [
         "单品",
         "麦香鱼系列",
@@ -879,10 +938,10 @@
     {
       "code": "9900005422",
       "name": "汉堡开心乐园餐",
-      "price": 23.5,
+      "price": 25.5,
       "tags": [
-        "开心乐园餐",
         "童年童款",
+        "开心乐园餐",
         "正餐",
         "含肉"
       ],
@@ -908,26 +967,14 @@
     {
       "code": "521950",
       "name": "蓝莓爆爆珠麦旋风",
-      "price": 16.0,
+      "price": 17.5,
       "tags": [
         "上新",
         "蓝莓",
         "饮品",
         "甜品"
       ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G521950_320.gif",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
-      "code": "9900013304",
-      "name": "人气经典随心配",
-      "price": 14.9,
-      "tags": [
-        "超值百种组合随心配"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900013304_320.png",
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_521950_320.png",
       "discountType": null,
       "energy": 0,
       "protein": 0
@@ -935,7 +982,7 @@
     {
       "code": "9900015726",
       "name": "韩式甜辣酱鸡块8块",
-      "price": 19.9,
+      "price": 33.0,
       "tags": [
         "上新",
         "韩式风味",
@@ -957,7 +1004,7 @@
         "上新",
         "灰焰"
       ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G521951_320.gif",
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_521951_320.png",
       "discountType": null,
       "energy": 0,
       "protein": 0
@@ -965,7 +1012,7 @@
     {
       "code": "9900011126",
       "name": "酥脆无双套餐",
-      "price": 20.0,
+      "price": 31.0,
       "tags": [],
       "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260701/product/MS_9900011126_320.png",
       "discountType": null,
@@ -975,7 +1022,7 @@
     {
       "code": "521952",
       "name": "龙焰鸡腿堡",
-      "price": 24.5,
+      "price": 27.5,
       "tags": [
         "上新",
         "韩式辣椒黄油风味",
@@ -988,23 +1035,9 @@
       "protein": 0
     },
     {
-      "code": "9900015602",
-      "name": "大堡口福三件套",
-      "price": 22.9,
-      "tags": [
-        "大口吃肉好快乐",
-        "正餐",
-        "含肉"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900015602_320.png",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
       "code": "521953",
       "name": "龙焰芝士棒鸡腿堡",
-      "price": 27.5,
+      "price": 30.5,
       "tags": [
         "上新",
         "浓郁奶香拉丝芝士",
@@ -1021,7 +1054,7 @@
     {
       "code": "9900011128",
       "name": "“堡”你欢乐套餐",
-      "price": 28.0,
+      "price": 46.0,
       "tags": [
         "粉丝之选",
         "正餐",
@@ -1033,25 +1066,9 @@
       "protein": 0
     },
     {
-      "code": "521316",
-      "name": "高达吉士双牛堡",
-      "price": 22.5,
-      "tags": [
-        "单品",
-        "100%纯牛肉",
-        "人气",
-        "正餐",
-        "含肉"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_521316_320.png",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
       "code": "9900011121",
       "name": "“苹”水相“鱼”套餐",
-      "price": 36.0,
+      "price": 55.5,
       "tags": [
         "粉丝之选",
         "正餐",
@@ -1063,38 +1080,11 @@
       "protein": 0
     },
     {
-      "code": "9900015568",
-      "name": "精选超值随心配",
-      "price": 13.9,
-      "tags": [
-        "超值百种组合随心配"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900015568_320.png",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
       "code": "9900011123",
       "name": "“辣”么快乐套餐",
-      "price": 24.0,
+      "price": 39.5,
       "tags": [],
       "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900011123_320.png",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
-      "code": "521836",
-      "name": "柠檬脆脆麦旋风",
-      "price": 16.0,
-      "tags": [
-        "上新",
-        "一口柠香",
-        "饮品",
-        "甜品"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G521836_320.gif",
       "discountType": null,
       "energy": 0,
       "protein": 0
@@ -1118,7 +1108,7 @@
     {
       "code": "1700",
       "name": "麦辣鸡翅",
-      "price": 14.5,
+      "price": 15.5,
       "tags": [
         "单品",
         "黄金酥脆",
@@ -1200,6 +1190,18 @@
       "protein": 4.0
     },
     {
+      "code": "510479",
+      "name": "燕麦奶铁",
+      "price": 9.9,
+      "tags": [
+        "麦咖啡™咖啡"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260422/product/MS_G510481_320.png",
+      "discountType": "随单购麦金卡优惠",
+      "energy": 132.0,
+      "protein": 3.0
+    },
+    {
       "code": "9900000882",
       "name": "芝士安格斯厚牛堡四件套",
       "price": 37.0,
@@ -1217,7 +1219,7 @@
     {
       "code": "9900005411",
       "name": "不素之霸双层牛堡三件套",
-      "price": 37.5,
+      "price": 55.0,
       "tags": [
         "套餐",
         "100%纯牛肉",
@@ -1246,7 +1248,7 @@
     {
       "code": "9900004066",
       "name": "堡堡随心拼（7件任选）",
-      "price": 73.0,
+      "price": 85.0,
       "tags": [
         "小食拼盘",
         "万种组合",
@@ -1259,22 +1261,9 @@
       "protein": 0
     },
     {
-      "code": "9900004064",
-      "name": "精选单人餐三件套",
-      "price": 35.0,
-      "tags": [
-        "经典精选",
-        "爆款"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900004064_320.gif",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
       "code": "1440",
       "name": "麦辣鸡腿汉堡",
-      "price": 23.0,
+      "price": 26.0,
       "tags": [
         "单品",
         "人气经典",
@@ -1288,9 +1277,38 @@
       "protein": 24.0
     },
     {
+      "code": "9900013732",
+      "name": "经典麦旋风",
+      "price": 16.5,
+      "tags": [
+        "冰淇淋",
+        "饮品",
+        "甜品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900013732_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "521922",
+      "name": "奶香大米派",
+      "price": 10.5,
+      "tags": [
+        "上新",
+        "生日米香派对",
+        "小吃",
+        "甜品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260916/product/MS_521922_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
       "code": "515280",
       "name": "阳光柠檬红茶",
-      "price": 9.5,
+      "price": 11.0,
       "tags": [
         "冷饮",
         "饮品"
@@ -1303,7 +1321,7 @@
     {
       "code": "9900009242",
       "name": "“苹板”支撑Pro套餐",
-      "price": 39.5,
+      "price": 58.0,
       "tags": [],
       "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900009242_320.png",
       "discountType": null,
@@ -1311,9 +1329,22 @@
       "protein": 25.0
     },
     {
+      "code": "507389",
+      "name": "浓缩咖啡",
+      "price": 19.0,
+      "tags": [
+        "麦咖啡™咖啡",
+        "饮品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250324/product/MS_507389_320.png",
+      "discountType": null,
+      "energy": 13.0,
+      "protein": 1.0
+    },
+    {
       "code": "9900009245",
       "name": "牛气满满套餐",
-      "price": 34.0,
+      "price": 52.0,
       "tags": [
         "正餐",
         "含肉"
@@ -1322,6 +1353,18 @@
       "discountType": null,
       "energy": 495.0,
       "protein": 26.0
+    },
+    {
+      "code": "507387",
+      "name": "卡布奇诺",
+      "price": 25.0,
+      "tags": [
+        "麦咖啡™咖啡"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250324/product/MS_G507388_320.png",
+      "discountType": null,
+      "energy": 167.0,
+      "protein": 9.0
     },
     {
       "code": "9900000893",
@@ -1366,26 +1409,12 @@
       "protein": 0
     },
     {
-      "code": "515837",
-      "name": "圆筒冰淇淋",
-      "price": 5.0,
-      "tags": [
-        "冰淇淋",
-        "饮品",
-        "甜品"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_515837_320.png",
-      "discountType": null,
-      "energy": 93.0,
-      "protein": 2.0
-    },
-    {
       "code": "9900005423",
       "name": "麦乐鸡开心乐园餐",
-      "price": 25.0,
+      "price": 27.0,
       "tags": [
-        "开心乐园餐",
         "童年童款",
+        "开心乐园餐",
         "正餐",
         "含肉"
       ],
@@ -1397,7 +1426,7 @@
     {
       "code": "521816",
       "name": "酥酥多笋卷",
-      "price": 21.0,
+      "price": 24.5,
       "tags": [
         "单品",
         "全新升级",
@@ -1412,7 +1441,7 @@
     {
       "code": "521817",
       "name": "【美汁源】“多汁柠柠”",
-      "price": 12.0,
+      "price": 13.5,
       "tags": [
         "上新",
         "清爽上新"
@@ -1425,7 +1454,7 @@
     {
       "code": "6102",
       "name": "苹果片",
-      "price": 7.0,
+      "price": 7.5,
       "tags": [
         "小食",
         "小吃"
@@ -1438,7 +1467,7 @@
     {
       "code": "9900005428",
       "name": "培根安格斯厚牛堡三件套",
-      "price": 45.5,
+      "price": 63.5,
       "tags": [
         "套餐",
         "100%安格斯牛肉",
@@ -1451,22 +1480,9 @@
       "protein": 34.0
     },
     {
-      "code": "9900015902",
-      "name": "泷泷星愿四件套",
-      "price": 39.9,
-      "tags": [
-        "经典精选",
-        "汪苏泷限量周边"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900015902_320.gif",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
       "code": "1450",
       "name": "麦香鸡",
-      "price": 17.0,
+      "price": 19.5,
       "tags": [
         "单品",
         "正餐",
@@ -1480,7 +1496,7 @@
     {
       "code": "520445",
       "name": "薄皮焦香V翅",
-      "price": 15.5,
+      "price": 16.5,
       "tags": [
         "单品",
         "人气"
@@ -1493,7 +1509,7 @@
     {
       "code": "520689",
       "name": "鲜萃咖啡",
-      "price": 10.0,
+      "price": 11.0,
       "tags": [
         "热饮",
         "鲜萃咖啡",
@@ -1505,9 +1521,23 @@
       "protein": 1.0
     },
     {
+      "code": "507409",
+      "name": "麦咖啡™奶铁",
+      "price": 9.9,
+      "tags": [
+        "限定特惠",
+        "更奶更浓",
+        "饮品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260422/product/MS_G507372_320.gif",
+      "discountType": "随单购麦金卡优惠",
+      "energy": 0,
+      "protein": 0
+    },
+    {
       "code": "3505",
       "name": "锡兰红茶",
-      "price": 11.5,
+      "price": 12.5,
       "tags": [
         "热饮",
         "饮品"
@@ -1520,7 +1550,7 @@
     {
       "code": "1600",
       "name": "麦香鱼",
-      "price": 22.5,
+      "price": 25.0,
       "tags": [
         "单品",
         "麦香鱼系列",
@@ -1533,37 +1563,22 @@
       "protein": 16.0
     },
     {
-      "code": "9900003538",
-      "name": "学生专享饮品随心选",
-      "price": 10.0,
+      "code": "507411",
+      "name": "麦咖啡™美式",
+      "price": 9.9,
       "tags": [
-        "冷饮",
+        "限定特惠",
         "饮品"
       ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900003538_320.gif",
-      "discountType": null,
-      "energy": 0,
-      "protein": 0
-    },
-    {
-      "code": "9900003537",
-      "name": "学生专享汉堡小食随心选",
-      "price": 28.0,
-      "tags": [
-        "套餐",
-        "正餐",
-        "含肉",
-        "小吃"
-      ],
-      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250420/product/MS_9900003537_320_0_1744785048324.gif",
-      "discountType": null,
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260422/product/MS_G507374_320.gif",
+      "discountType": "随单购麦金卡优惠",
       "energy": 0,
       "protein": 0
     },
     {
       "code": "9900005430",
       "name": "芝士安格斯厚牛堡三件套",
-      "price": 42.5,
+      "price": 60.5,
       "tags": [
         "套餐",
         "100%安格斯牛肉",
@@ -1579,7 +1594,7 @@
     {
       "code": "4437",
       "name": "玉米杯",
-      "price": 13.0,
+      "price": 14.5,
       "tags": [
         "小食",
         "小吃"
@@ -1592,7 +1607,7 @@
     {
       "code": "9900005432",
       "name": "麦麦脆汁鸡1块",
-      "price": 15.0,
+      "price": 16.0,
       "tags": [
         "单品",
         "正餐",
@@ -1600,6 +1615,243 @@
       ],
       "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900005432_320.png",
       "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "3757",
+      "name": "纯悦",
+      "price": 7.5,
+      "tags": [
+        "冷饮",
+        "饮品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20240904/product/MS_3757_320.png",
+      "discountType": null,
+      "energy": 0.0,
+      "protein": 0.0
+    },
+    {
+      "code": "506189",
+      "name": "如意百宝袋",
+      "price": 12.0,
+      "tags": [
+        "其他"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_506189_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900008754",
+      "name": "经典麦旋风",
+      "price": 15.0,
+      "tags": [
+        "冰淇淋",
+        "饮品",
+        "甜品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008754_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900015151",
+      "name": "麦麦周末双人餐",
+      "price": 49.9,
+      "tags": [
+        "多人餐",
+        "全球爆款",
+        "全天供应"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900015151_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900013304",
+      "name": "人气经典随心配",
+      "price": 14.9,
+      "tags": [
+        "超值百种组合随心配"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900013304_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900015602",
+      "name": "大堡口福三件套",
+      "price": 22.9,
+      "tags": [
+        "大口吃肉好快乐",
+        "正餐",
+        "含肉"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900015602_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "521316",
+      "name": "高达吉士双牛堡",
+      "price": 22.5,
+      "tags": [
+        "单品",
+        "100%纯牛肉",
+        "人气",
+        "正餐",
+        "含肉"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_521316_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900015568",
+      "name": "精选超值随心配",
+      "price": 13.9,
+      "tags": [
+        "超值百种组合随心配"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900015568_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "521836",
+      "name": "柠檬脆脆麦旋风",
+      "price": 16.0,
+      "tags": [
+        "上新",
+        "一口柠香",
+        "饮品",
+        "甜品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_G521836_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "9900004064",
+      "name": "精选单人餐三件套",
+      "price": 35.0,
+      "tags": [
+        "经典精选",
+        "爆款"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900004064_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "515837",
+      "name": "圆筒冰淇淋",
+      "price": 5.0,
+      "tags": [
+        "冰淇淋",
+        "饮品",
+        "甜品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_515837_320.png",
+      "discountType": null,
+      "energy": 93.0,
+      "protein": 2.0
+    },
+    {
+      "code": "9900015902",
+      "name": "泷泷星愿四件套",
+      "price": 39.9,
+      "tags": [
+        "经典精选",
+        "汪苏泷限量周边"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_9900015902_320.gif",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "6352",
+      "name": "阳光橙麦炫酷",
+      "price": 13.5,
+      "tags": [
+        "冷饮",
+        "饮品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_6352_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "514851",
+      "name": "咖啡阿芙佳朵",
+      "price": 15.0,
+      "tags": [
+        "麦咖啡™咖啡",
+        "饮品"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250324/product/MS_514851_320.png",
+      "discountType": null,
+      "energy": 139.0,
+      "protein": 4.0
+    },
+    {
+      "code": "9900005439",
+      "name": "开心亲子双人餐",
+      "price": 59.5,
+      "tags": [
+        "开心亲子餐",
+        "童年童款"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20240904/product/MS_9900005439_320.png",
+      "discountType": null,
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "515955",
+      "name": "浓浓燕麦黑巧（冰/热）",
+      "price": 15.9,
+      "tags": [
+        "限定特惠"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_G515954_320.gif",
+      "discountType": "促销优惠",
+      "energy": 0,
+      "protein": 0
+    },
+    {
+      "code": "515949",
+      "name": "浓浓黑巧雪冰",
+      "price": 23.0,
+      "tags": [
+        "其他"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250611/product/MS_G515949_320.png",
+      "discountType": null,
+      "energy": 359.0,
+      "protein": 8.0
+    },
+    {
+      "code": "515946",
+      "name": "浓浓黑巧（冰/热）",
+      "price": 13.9,
+      "tags": [
+        "限定特惠"
+      ],
+      "image": "https://menu-img.mcd.cn/pcm/prod/menu/20261008/product/MS_G515945_320.gif",
+      "discountType": "促销优惠",
       "energy": 0,
       "protein": 0
     }
