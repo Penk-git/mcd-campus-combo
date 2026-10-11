@@ -205,6 +205,20 @@
 
   .disc { font-size: 11px; color: #b08a3a; text-align: center; margin-top: 18px; line-height: 1.7; font-weight: 700; position: relative; z-index: 1; }
   a.link { color: var(--red); text-decoration: none; font-weight: 800; }
+
+  /* ===== 真实优惠 / 当前活动面板 ===== */
+  .offers-wrap { max-width: 460px; margin: 22px auto 0; position: relative; z-index: 1; }
+  .offers-title { font-size: 14px; font-weight: 900; color: var(--red-dd); margin: 0 0 10px; display: flex; flex-direction: column; }
+  .offers-sub { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 2px; }
+  .offers { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+  .offer { background: #fff; border: 2px solid #ffe1a8; border-radius: 12px; padding: 8px; text-align: center; box-shadow: 0 3px 0 #ffe1a8; overflow: hidden; }
+  .offer.camp { border-color: #ffd2cf; box-shadow: 0 3px 0 #ffd2cf; }
+  .oimg { width: 100%; height: 64px; object-fit: contain; border-radius: 8px; background: #fff8ea; margin-bottom: 5px; }
+  .ot { font-size: 11px; font-weight: 800; color: var(--ink); line-height: 1.3; max-height: 2.6em; overflow: hidden; }
+  .otag { display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 800; color: #fff; background: var(--red); padding: 1px 7px; border-radius: 4px; }
+  .otag.camp { background: #e08a2e; }
+  .od { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 3px; line-height: 1.3; max-height: 2.6em; overflow: hidden; }
+  .odim { font-size: 12px; color: var(--muted); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -287,6 +301,11 @@
 
   <div class="results" id="results">
     <div class="empty">选好场景点「算一下」，3 秒出 Top3 凑单方案 👆</div>
+  </div>
+
+  <div class="offers-wrap">
+    <h3 class="offers-title">🎟️ 真实可用优惠 / 当前活动<span class="offers-sub">全部来自麦当劳官方 MCP（available-coupons / campaign-calendar）</span></h3>
+    <div class="offers" id="offers"></div>
   </div>
 
   <a class="star" href="https://github.com/Penk-git/mcd-campus-combo" target="_blank" rel="noopener">⭐ 觉得好用？给项目点个 Star 支持一下</a>

@@ -120,6 +120,37 @@ function derive(name, tags) {
   return add;
 }
 
+// 真实可领券解析（available-coupons 返回 Markdown），与 build_real_menu.py 同源
+const DECOR_PREFIX = ["人气", "经典", "招牌", "全新", "限时", "超值", "必点", "甄选", "热销", "上新", "隆重", "全新上市", "重磅", "明星", "网红"];
+function stripDecor(s) {
+  s = (s || "").trim();
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const d of DECOR_PREFIX) { if (s.startsWith(d)) { s = s.slice(d.length); changed = true; } }
+  }
+  return s.trim();
+}
+function parseAvailableCoupons(raw) {
+  const out = [];
+  for (const b of String(raw).split("- 优惠券标题：").slice(1)) {
+    const mt = b.match(/^(.+?)\s*\\/);
+    const title = ((mt ? mt[1] : b.split("\n")[0]) || "").replace(/\\/g, "").trim();
+    if (!title) continue;
+    const img = (b.match(/<img src="([^"]+)"/) || [])[1];
+    const st = (b.match(/状态：([^\n\\]+)/) || [])[1];
+    const c = { title, image: img || null, status: st ? st.trim() : null, type: "info", match: null, kind: "coupon" };
+    if (title.indexOf("免费") !== -1) { c.type = "free"; c.match = stripDecor(title.split("免费")[1]); }
+    else if (title.indexOf("买一送一") !== -1) { c.type = "bogo"; c.match = stripDecor(title.split("买一送一")[0]); }
+    else { const pm = title.match(/(\d+(?:\.\d+)?)元(.+)$/); if (pm) { c.type = "flat_item"; c.price = parseFloat(pm[1]); c.match = stripDecor(pm[2]); } else { c.match = stripDecor(title); } }
+    if (c.match) c.match = c.match.trim();
+    out.push(c);
+  }
+  const seen = new Set(); const uniq = [];
+  for (const c of out) { if (!seen.has(c.title)) { seen.add(c.title); uniq.push(c); } }
+  return uniq;
+}
+
 const MERCH_KW = ['周边', '玩具', '公仔', '挂件', '徽章', '毛绒', '玩偶', '盲盒', '手办', '模型', '服饰', '衬衫', '帽子'];
 const SAUCE_KW = ['蘸酱', '风味酱', '牧场酱', '山葵酱', '番茄酱', '辣椒酱', '芥末酱', '沙拉酱', '蜂蜜酱', '糖浆', '酱料'];
 
@@ -270,6 +301,12 @@ async function buildMenuForLocation(token, lat, lng, city) {
       }
     } catch (_) { /* ignore */ }
   }
+
+  // 8) 真实可领券（available-coupons，全局真实券）—— 消除 mock 券硬伤
+  try {
+    const av = textOf(await cli.callTool('available-coupons', {}));
+    coupons = coupons.concat(parseAvailableCoupons(av));
+  } catch (_) { /* ignore */ }
 
   return {
     source: "McDonald's China MCP (query-nearby-stores + query-meals + list-nutrition-foods + query-store-coupons)",

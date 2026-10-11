@@ -220,25 +220,60 @@ print("派生校园标签覆盖:", dict(dc))
 import re
 
 
+# 券/活动标题里常见的装饰前缀，匹配餐品名时要剥掉，否则匹配不到真实餐品
+DECOR_PREFIX = ["人气", "经典", "招牌", "全新", "限时", "超值", "必点", "甄选", "热销", "上新",
+                "隆重", "全新上市", "重磅", "明星", "网红"]
+
+
+def _strip_decor(s):
+    s = (s or "").strip()
+    changed = True
+    while changed:
+        changed = False
+        for d in DECOR_PREFIX:
+            if s.startswith(d):
+                s = s[len(d):]
+                changed = True
+    return s.strip()
+
+
 def parse_available_coupons(raw):
-    """available-coupons 返回 Markdown 列表，解析为结构化券。"""
+    """available-coupons 返回 Markdown 列表，解析为结构化券（含图片、匹配关键词）。"""
     coupons = []
-    titles = re.findall(r"优惠券标题：([^\n\\]+)", raw)
-    for t in titles:
-        t = t.strip()
-        if not t:
+    for b in re.split(r"-\s*优惠券标题：", raw)[1:]:
+        mt = re.match(r"(.+?)\s*\\", b, re.S)
+        title = (mt.group(1).strip() if mt else b.split("\n")[0].strip()).replace("\\", "").strip()
+        if not title:
             continue
-        c = {"title": t, "type": "info", "match": None}
-        m = re.search(r"免费(.+?)(?:$|（|\(|\s|·)", t)
-        if m:
-            c["type"] = "free"; c["match"] = m.group(1).strip()
-        elif "买一送一" in t:
-            mm = re.search(r"(.+?)买一送一", t)
-            c["type"] = "bogo"; c["match"] = (mm.group(1).strip() if mm else None)
+        img = re.search(r'<img src="([^"]+)"', b)
+        status = re.search(r"状态：([^\n\\]+)", b)
+        c = {
+            "title": title,
+            "image": img.group(1) if img else None,
+            "status": status.group(1).strip() if status else None,
+            "type": "info",
+            "match": None,
+            "kind": "coupon",
+        }
+        if "免费" in title:
+            c["type"] = "free"
+            c["match"] = _strip_decor(title.split("免费", 1)[1])
+        elif "买一送一" in title:
+            c["type"] = "bogo"
+            c["match"] = _strip_decor(title.split("买一送一", 1)[0])
         else:
-            pm = re.search(r"(\d+(?:\.\d+)?)元(.+)$", t)
+            pm = re.search(r"(\d+(?:\.\d+)?)元(.+)$", title)
             if pm:
-                c["type"] = "flat_item"; c["price"] = float(pm.group(1)); c["match"] = pm.group(2).strip()
+                c["type"] = "flat_item"
+                try:
+                    c["price"] = float(pm.group(1))
+                except ValueError:
+                    pass
+                c["match"] = _strip_decor(pm.group(2))
+            else:
+                c["match"] = _strip_decor(title)
+        if c.get("match"):
+            c["match"] = c["match"].strip()
         coupons.append(c)
     seen = set(); uniq = []
     for c in coupons:
@@ -248,12 +283,22 @@ def parse_available_coupons(raw):
 
 
 def parse_campaigns(raw):
-    """campaign-calendar 返回 Markdown，解析为限时活动列表。"""
-    titles = re.findall(r"活动标题\*\*：([^\n]+)", raw)
-    descs = re.findall(r"活动内容介绍\*\*：([^\n]+)", raw)
+    """campaign-calendar 返回 Markdown，解析为限时活动列表（含图片、简介）。"""
     out = []
-    for i, ti in enumerate(titles):
-        out.append({"title": ti.strip(), "desc": (descs[i].strip() if i < len(descs) else "")})
+    for b in re.split(r"\*\*活动标题\*\*：", raw)[1:]:
+        m = re.search(
+            r"(.+?)\n\s*\*\*活动内容介绍\*\*：(.+?)\n\s*\*\*活动图片介绍\*\*：\s*<img src=\"([^\"]+)\"",
+            b, re.S,
+        )
+        if not m:
+            continue
+        out.append({
+            "title": m.group(1).strip(),
+            "desc": m.group(2).strip()[:240],
+            "image": m.group(3),
+            "type": "info",
+            "kind": "campaign",
+        })
     return out
 
 
@@ -270,7 +315,14 @@ try:
     if isinstance(sc_data, list) and sc_data:
         for c in sc_data:
             if isinstance(c, dict):
-                coupons.append({"title": c.get("title") or c.get("couponName") or "门店券", "type": "store", "match": None})
+                coupons.append({
+                    "title": c.get("title") or c.get("couponName") or "门店券",
+                    "image": c.get("image"),
+                    "status": None,
+                    "type": "store",
+                    "match": None,
+                    "kind": "coupon",
+                })
         print(f"门店专属券: {len(sc_data)} 条（已并入）")
 except Exception as e:
     print("门店券拉取跳过:", repr(e))
