@@ -21,7 +21,7 @@ for (const name of Object.keys(C.PROFILES)) {
   const okItem = JSON.stringify(best.items) === JSON.stringify(exp.items);
   const okProt = exp.protein == null || best.protein === exp.protein;
   const ok = okPay && okQty && okItem && okProt;
-  console.log((ok ? "✅" : "❌") + " " + name + " → " + items + " | 实付¥" + best.payable + " | " + best.qty + "份 | " + best.protein + "g蛋白");
+  console.log((ok ? "[通过] " : "[失败] ") + name + " → " + items + " | 实付¥" + best.payable + " | " + best.qty + "份 | " + best.protein + "g蛋白");
   if (!ok) { fail++; console.log("   期望: " + JSON.stringify(exp)); console.log("   实际: " + JSON.stringify({ payable: best.payable, qty: best.qty, protein: best.protein, items: best.items })); }
   else pass++;
 }

@@ -170,9 +170,11 @@
   .pay { font-size: 13px; color: var(--muted); font-weight: 800; }
   .pay b { font-size: 27px; color: var(--red); font-weight: 900; margin-right: 2px; }
   .pay .orig { text-decoration: line-through; opacity: .6; }
-  .items { margin: 10px 0 8px; display: flex; flex-wrap: wrap; gap: 6px; }
-  .itag { background: #fff3d6; border: 1.5px solid var(--yellow); color: var(--ink); font-size: 13px; font-weight: 800; padding: 4px 9px; border-radius: 10px; }
-  .itag b { color: var(--red); }
+  .items { margin: 10px 0 8px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .iitem { display: inline-flex; align-items: center; gap: 8px; background: #fff3d6; border: 1.5px solid var(--yellow); border-radius: 12px; padding: 6px 10px 6px 6px; max-width: 100%; }
+  .iitem .iimg { width: 42px; height: 42px; object-fit: contain; border-radius: 8px; background: #fff; flex: 0 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .iitem .iname { font-size: 13px; font-weight: 800; color: var(--ink); }
+  .iitem .iname b { color: var(--red); margin-left: 4px; }
   .meta { display: flex; gap: 14px; font-size: 12px; color: var(--muted); font-weight: 800; flex-wrap: wrap; }
   .meta span b { color: var(--ink); font-weight: 900; }
   .cpn { display: inline-block; font-size: 11px; font-weight: 800; color: #fff; background: var(--red); padding: 2px 8px; border-radius: 4px; margin-left: 6px; }
@@ -210,7 +212,6 @@
   <!-- 顶部店招 + 拱门 Logo -->
   <div class="sign">
     <div class="arches"></div>
-    <span class="badge">🏆 2026 程序员创意开发大赛</span>
     <h1><span class="fries-emoji">🍔</span> 麦当劳校园省钱凑单</h1>
     <p class="sub">按预算 / 校园场景，凑出最划算套餐 · 一句话就能用</p>
     <p class="sub" id="datasrc" style="margin-top:6px; color:#fff; font-weight:800"></p>
@@ -244,11 +245,39 @@
         <input id="budget" type="number" min="1" step="1" value="15" inputmode="numeric" />
       </div>
       <div class="field">
-        <label>想要什么</label>
+        <label>想要什么（品类）</label>
+        <select id="cat">
+          <option value="不限">不限（都来点）</option>
+          <option value="汉堡类">汉堡类</option>
+          <option value="炸鸡鸡块">炸鸡 / 鸡块</option>
+          <option value="小食薯条">小食 / 薯条</option>
+          <option value="甜品饮品">甜品 / 饮品</option>
+          <option value="早餐类">早餐类</option>
+          <option value="套餐类">套餐类</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>凑单偏好</label>
         <select id="mode">
-          <option value="count">份数最多</option>
-          <option value="energy">每元热量最高</option>
-          <option value="protein">每元蛋白最高</option>
+          <option value="count">份数最多（最省钱）</option>
+          <option value="protein">高蛋白（备考 / 健身）</option>
+          <option value="energy">高热量（顶饱夜宵）</option>
+          <option value="ppc">控卡高蛋白（低卡）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>显示几种搭法</label>
+        <select id="topn">
+          <option value="3" selected>3 种</option>
+          <option value="4">4 种</option>
+          <option value="5">5 种</option>
+          <option value="6">6 种</option>
+          <option value="7">7 种</option>
+          <option value="8">8 种</option>
+          <option value="9">9 种</option>
+          <option value="10">10 种</option>
         </select>
       </div>
     </div>

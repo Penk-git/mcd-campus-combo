@@ -1,8 +1,8 @@
 /*
  * demo.js —— 校园省钱凑单 demo 的渲染逻辑（共享）
  * 依赖 combo.js（window.Combo）。各风格 HTML 只需引用本文件 + 各自的 CSS。
- * DOM 约定（各风格必须保留）：#chips #budget #mode #note #results #go #copy
- * 结果卡片类：.rcard .r1/.r2/.r3 .rank .pay .items .itag .meta .cpn
+ * DOM 约定（各风格必须保留）：#chips #budget #cat #mode #topn #note #results #go #copy
+ * 结果卡片类：.rcard .r1/.r2/.r3 .rank .pay .items .iitem .iimg .iname .meta .cpn
  */
 (function () {
   "use strict";
@@ -19,6 +19,27 @@
   var BACKEND_URL = window.BACKEND_URL || "";
   var CITY_LIST = ["北京", "上海", "广州", "深圳", "成都", "杭州", "武汉", "西安", "南京", "重庆", "天津", "苏州", "长沙", "郑州", "青岛", "沈阳", "大连", "厦门", "昆明", "兰州", "哈尔滨", "济南", "福州", "合肥", "南昌", "贵阳", "南宁", "石家庄", "长春", "太原", "呼和浩特", "乌鲁木齐", "银川", "西宁", "海口", "拉萨"];
 
+  // 想要什么：按麦当劳产品类设置（基于名称关键词匹配，零外部依赖）
+  var CATS = {
+    "不限": null,
+    "汉堡类": ["堡", "麦满分", "吉士", "汉堡"],
+    "炸鸡鸡块": ["鸡", "炸鸡", "鸡块", "麦辣", "鸡腿", "鸡翅"],
+    "小食薯条": ["薯", "玉米", "麦乐鸡", "鸡块", "卷", "蛋", "小食"],
+    "甜品饮品": ["冰淇淋", "麦旋风", "圣代", "可乐", "雪", "咖啡", "茶", "豆浆", "饮", "奶", "布蕾", "派", "圆筒", "甜品"],
+    "早餐类": ["早餐", "麦满分", "薯饼", "豆浆", "粥", "炒蛋"],
+    "套餐类": ["套餐", "三件套", "二件套", "超值", "随心配"]
+  };
+  function matchCat(name, cat) {
+    var kws = CATS[cat];
+    if (!kws) return true;
+    return kws.some(function (k) { return name.indexOf(k) !== -1; });
+  }
+
+  // 图片索引（按 code 找真实商品图）
+  var byCode = {};
+  function rebuildIndex() { byCode = {}; MENU.forEach(function (it) { byCode[it.code] = it; }); }
+  rebuildIndex();
+
   function setDataSrc(text) {
     var ds = document.getElementById("datasrc");
     if (ds) ds.textContent = text;
@@ -26,6 +47,7 @@
   function applyMenu(menu, coupons, label) {
     MENU = menu;
     COUPONS = (coupons && coupons.length) ? coupons : C.MOCK_COUPONS;
+    rebuildIndex();
     setDataSrc(label);
     compute();
   }
@@ -52,7 +74,9 @@
 
   var chipsEl = document.getElementById("chips");
   var budgetEl = document.getElementById("budget");
+  var catEl = document.getElementById("cat");
   var modeEl = document.getElementById("mode");
+  var topnEl = document.getElementById("topn");
   var noteEl = document.getElementById("note");
   var resultsEl = document.getElementById("results");
   var goEl = document.getElementById("go");
@@ -100,12 +124,21 @@
     };
   }
 
+  function updateNote() {
+    var p = C.PROFILES[current];
+    var b = budgetEl.value;
+    if (noteEl) noteEl.textContent = p.note + "（预算 ¥" + b + "）";
+  }
   function applyProfile() {
     var p = C.PROFILES[current];
     if (budgetEl) budgetEl.value = p.budget;
     if (modeEl) modeEl.value = p.mode;
-    if (noteEl) noteEl.textContent = "📌 " + p.note;
+    updateNote();
   }
+
+  // 预算变动时，提示词里的预算价格要跟着变
+  if (budgetEl) budgetEl.addEventListener("input", updateNote);
+
   applyProfile();
 
   // 真实数据来源标注
@@ -113,13 +146,16 @@
     var ds = document.getElementById("datasrc");
     if (ds) {
       var src = REAL.store && REAL.store.name ? REAL.store.name : "麦当劳中国官方 MCP";
-      ds.textContent = (BACKEND_URL ? "📍 已接入实时后端 · " : "✅ 真实数据 · ") + src + " · 共 " + MENU.length + " 个在售餐品";
+      ds.textContent = (BACKEND_URL ? "📍 已接入实时后端 · " : "真实数据 · ") + src + " · 共 " + MENU.length + " 个在售餐品";
     }
   }
 
   function fmtItems(items) {
     return items.map(function (it) {
-      return '<span class="itag">' + it[0] + (it[1] > 1 ? ' <b>×' + it[1] + '</b>' : '') + '</span>';
+      var code = it[2], qty = it[1], name = it[0];
+      var im = byCode[code] && byCode[code].image;
+      var img = im ? '<img class="iimg" src="' + im + '" alt="' + name + '" loading="lazy" onerror="this.style.display=\'none\'">' : '';
+      return '<span class="iitem">' + img + '<span class="iname">' + name + (qty > 1 ? ' <b>×' + qty + '</b>' : '') + '</span></span>';
     }).join("");
   }
 
@@ -128,22 +164,29 @@
     var budget = parseFloat(budgetEl.value);
     if (!(budget > 0)) { alert("预算填个正数哈"); return; }
     var mode = modeEl.value;
-    var top = C.searchCombos(MENU, COUPONS, budget, p.tags, mode, p.max_qty, p.max_size);
+    var cat = catEl.value;
+    // 想要什么：品类过滤（选中品类时忽略场景默认 tags，避免双重过滤把池子清空）
+    var pool = MENU, tags = p.tags;
+    if (cat && cat !== "不限") {
+      pool = MENU.filter(function (it) { return matchCat(it.name, cat); });
+      tags = [];
+    }
+    var topN = parseInt(topnEl.value, 10) || 3;
+    var top = C.searchCombos(pool, COUPONS, budget, tags, mode, p.max_qty, p.max_size, topN);
 
     if (!top || top.length === 0) {
-      resultsEl.innerHTML = '<div class="empty">⚠️ 这个预算 / 场景下凑不出组合，<br/>试试提高预算或换个场景。</div>';
+      resultsEl.innerHTML = '<div class="empty">⚠️ 这个预算 / 品类下凑不出组合，<br/>试试提高预算、换个品类或换个场景。</div>';
       lastText = "";
       return;
     }
-    var rankNames = ["第1名", "第2名", "第3名"];
     var html = "";
     top.forEach(function (c, i) {
       var cpn = c.coupon && c.coupon.id
         ? '<span class="cpn">已用券 ' + c.coupon.desc + '</span>' : '<span class="cpn">无可用券</span>';
       html +=
-        '<div class="rcard r' + (i + 1) + '">' +
+        '<div class="rcard r' + ((i % 3) + 1) + '">' +
           '<div class="rtop">' +
-            '<span class="rank">' + rankNames[i] + '</span>' +
+            '<span class="rank">第' + (i + 1) + '名</span>' +
             '<span class="pay">实付 <b>¥' + c.payable + '</b> <span class="orig">原价¥' + c.original + '</span>' + cpn + '</span>' +
           '</div>' +
           '<div class="items">' + fmtItems(c.items) + '</div>' +
@@ -156,7 +199,7 @@
     });
     resultsEl.innerHTML = html;
 
-    lastText = "【麦当劳校园省钱凑单 · " + current + "】预算¥" + budget + "\n" +
+    lastText = "【麦当劳校园省钱凑单 · " + current + "】预算¥" + budget + (cat && cat !== "不限" ? " · " + cat : "") + "\n" +
       top.map(function (c, i) {
         var items = c.items.map(function (it) { return it[0] + (it[1] > 1 ? "×" + it[1] : ""); }).join(" + ");
         return (i + 1) + ". " + items + " = 实付¥" + c.payable + "（原价¥" + c.original + (c.coupon.id ? "，" + c.coupon.desc : "") + "），" + c.qty + "份/" + c.energy + "kcal/" + c.protein + "g蛋白";
@@ -171,7 +214,7 @@
       navigator.share({ title: "麦当劳校园省钱凑单", text: lastText }).catch(function () {});
     } else if (navigator.clipboard) {
       navigator.clipboard.writeText(lastText).then(function () {
-        copyEl.textContent = "✅ 已复制，去社团群粘贴吧";
+        copyEl.textContent = "已复制，去社团群粘贴吧";
         setTimeout(function () { copyEl.textContent = "📋 复制当前方案"; }, 1800);
       }).catch(function () {});
     }
