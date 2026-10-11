@@ -14,6 +14,42 @@
   var MENU = REAL ? REAL.items : C.MOCK_MENU;
   var COUPONS = (REAL && REAL.coupons && REAL.coupons.length) ? REAL.coupons : C.MOCK_COUPONS;
 
+  // 方案 B：实时后端地址（CloudBase 云函数）。
+  // 留空 = 回退 real_menu.js 静态快照。部署后可在 index.html 用 <script>window.BACKEND_URL="..."</script> 注入，无需改本文件。
+  var BACKEND_URL = window.BACKEND_URL || "";
+  var CITY_LIST = ["北京", "上海", "广州", "深圳", "成都", "杭州", "武汉", "西安", "南京", "重庆", "天津", "苏州", "长沙", "郑州", "青岛", "沈阳", "大连", "厦门", "昆明", "兰州", "哈尔滨", "济南", "福州", "合肥", "南昌", "贵阳", "南宁", "石家庄", "长春", "太原", "呼和浩特", "乌鲁木齐", "银川", "西宁", "海口", "拉萨"];
+
+  function setDataSrc(text) {
+    var ds = document.getElementById("datasrc");
+    if (ds) ds.textContent = text;
+  }
+  function applyMenu(menu, coupons, label) {
+    MENU = menu;
+    COUPONS = (coupons && coupons.length) ? coupons : C.MOCK_COUPONS;
+    setDataSrc(label);
+    compute();
+  }
+  // 实时拉取：优先浏览器定位(lat/lng)，或城市选择(city)。失败/无数据则保持静态快照。
+  function loadLive(lat, lng, city) {
+    if (!BACKEND_URL) return;
+    var params = [];
+    if (lat != null && lng != null) { params.push("lat=" + lat); params.push("lng=" + lng); }
+    if (city) params.push("city=" + encodeURIComponent(city));
+    if (!params.length) return;
+    setDataSrc("🔄 正在拉取当地门店实时菜单…");
+    fetch(BACKEND_URL + "?" + params.join("&"), { mode: "cors" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.items && d.items.length) {
+          var s = (d.store && d.store.name) || "当地门店";
+          applyMenu(d.items, d.coupons, "📍 实时 · " + s + " · 共 " + d.items.length + " 个在售餐品");
+        } else {
+          setDataSrc("⚠️ 该地区暂无可售菜单，已回退快照");
+        }
+      })
+      .catch(function () { setDataSrc("⚠️ 实时拉取失败（检查后端地址/跨域），已回退快照"); });
+  }
+
   var chipsEl = document.getElementById("chips");
   var budgetEl = document.getElementById("budget");
   var modeEl = document.getElementById("mode");
@@ -38,6 +74,32 @@
     chipsEl.appendChild(b);
   });
 
+  // 定位 UI 接线（方案 B）：📍 用我的位置 → 浏览器定位；城市下拉 → 按城市
+  var locBtn = document.getElementById("locBtn");
+  var citySel = document.getElementById("city");
+  if (citySel) {
+    CITY_LIST.forEach(function (c) {
+      var o = document.createElement("option");
+      o.value = c; o.textContent = c;
+      citySel.appendChild(o);
+    });
+    citySel.onchange = function () { if (citySel.value) loadLive(null, null, citySel.value); };
+  }
+  if (locBtn) {
+    locBtn.onclick = function () {
+      if (!BACKEND_URL) { alert("未配置实时后端地址（BACKEND_URL 为空，当前为静态快照模式）"); return; }
+      if (!navigator.geolocation) { alert("当前浏览器不支持定位，请改用城市选择"); return; }
+      locBtn.textContent = "📍 定位中…";
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        loadLive(pos.coords.latitude, pos.coords.longitude, null);
+        locBtn.textContent = "📍 用我的位置";
+      }, function () {
+        locBtn.textContent = "📍 用我的位置";
+        if (citySel && citySel.value) loadLive(null, null, citySel.value);
+      }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
+    };
+  }
+
   function applyProfile() {
     var p = C.PROFILES[current];
     if (budgetEl) budgetEl.value = p.budget;
@@ -51,7 +113,7 @@
     var ds = document.getElementById("datasrc");
     if (ds) {
       var src = REAL.store && REAL.store.name ? REAL.store.name : "麦当劳中国官方 MCP";
-      ds.textContent = "✅ 真实数据 · " + src + " · 共 " + MENU.length + " 个在售餐品";
+      ds.textContent = (BACKEND_URL ? "📍 已接入实时后端 · " : "✅ 真实数据 · ") + src + " · 共 " + MENU.length + " 个在售餐品";
     }
   }
 

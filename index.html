@@ -124,6 +124,20 @@
   }
   .field input:focus, .field select:focus { border-color: var(--red); }
   .note { font-size: 12px; color: var(--muted); font-weight: 700; margin: 12px 0 0; min-height: 16px; }
+
+  /* ===== 定位栏（方案 B 实时后端） ===== */
+  .locbar { display: flex; gap: 10px; margin-bottom: 14px; }
+  .locbtn {
+    flex: 0 0 auto; border: none; cursor: pointer; white-space: nowrap;
+    background: linear-gradient(180deg, var(--yellow), var(--yellow-d)); color: var(--red-dd);
+    font-weight: 900; font-size: 13px; padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 0 var(--red);
+  }
+  .locbtn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--red); }
+  .citysel {
+    flex: 1 1 auto; padding: 10px 12px; font-size: 14px; font-weight: 800;
+    border: 2px solid var(--line); border-radius: 12px; background: #fffdf6; color: var(--ink); outline: none;
+  }
+  .citysel:focus { border-color: var(--red); }
   .go {
     width: 100%; margin-top: 14px; border: none; cursor: pointer;
     background: linear-gradient(180deg, var(--red), var(--red-d)); color: #fff; font-size: 17px; font-weight: 900; letter-spacing: 1px;
@@ -218,6 +232,10 @@
   </div>
 
   <div class="panel">
+    <div class="locbar">
+      <button class="locbtn" id="locBtn">📍 用我的位置</button>
+      <select class="citysel" id="city"><option value="">选择城市</option></select>
+    </div>
     <p class="label">选校园场景</p>
     <div class="chips" id="chips"></div>
     <div class="row">
@@ -256,14 +274,16 @@
 
   <p class="disc">
     本页菜单 / 价格 / 热量 / 蛋白质均来自 <b>麦当劳中国官方 MCP</b> 真实接口<br/>
-    （query-nearby-stores · query-meals · list-nutrition-foods），为所选门店在售菜单的实时快照。<br/>
-    ⚠️ 快照为拉取时刻该门店在售餐品：早餐品类仅在早餐时段真实出现在菜单中；优惠券以门店实时返回为准。<br/>
+    （query-nearby-stores · query-meals · list-nutrition-foods）。接入实时后端后，<b>会按你的定位 / 所选城市返回当地营业门店</b>的当前在售菜单。<br/>
+    ⚠️ 当前为静态快照（兰州门店）：早餐品类仅在早餐时段真实出现在菜单中；优惠券以门店实时返回为准。<br/>
     项目地址：<a class="link" href="https://github.com/Penk-git/mcd-campus-combo" target="_blank" rel="noopener">github.com/Penk-git/mcd-campus-combo</a>
   </p>
 </div>
 
 <script src="real_menu.js"></script>
 <script src="combo.js"></script>
+<!-- 部署到 CloudBase 后，把下面这行填上云函数地址即可开启「实时按定位返回当地门店」；留空则回退静态快照 -->
+<script>window.BACKEND_URL = "";</script>
 <script src="demo.js"></script>
 </body>
 </html>
