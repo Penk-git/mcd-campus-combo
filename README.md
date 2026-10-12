@@ -18,8 +18,6 @@
 | :---: | :---: |
 | ![桌面端](docs/shot-desktop.png) | ![移动端](docs/shot-mobile.png) |
 
-还有 🖼️ **一键生成分享图**：算完方案点一下，canvas 生成带 Top3 方案 + 营养解读 + 项目地址的卡片图，手机上直接调起系统分享发群。
-
 > 启用方法：本仓库已含 `index.html`（单页 demo）。在仓库 **Settings → Pages → Source 选 `main` / `root`** 即可上线上面的地址。
 
 ## 目标用户
