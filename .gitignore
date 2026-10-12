@@ -7,3 +7,4 @@ node_modules/
 test_*.js
 build_*.py
 verify_*.js
+.mcp_token
