@@ -370,7 +370,7 @@
     } else if (navigator.clipboard) {
       navigator.clipboard.writeText(lastText).then(function () {
         copyEl.textContent = "已复制，去社团群粘贴吧";
-        setTimeout(function () { copyEl.textContent = "📋 复制当前方案"; }, 1800);
+        setTimeout(function () { copyEl.textContent = "复制当前方案"; }, 1800);
       }).catch(function () {});
     }
   };
@@ -478,8 +478,8 @@
       if (!lastTop.length) { alert("先算出一个能用的方案再生成分享图哈"); return; }
       var cv = buildShareCard();
       var done = function () {
-        shareEl.textContent = "✅ 已生成";
-        setTimeout(function () { shareEl.textContent = "🖼️ 生成分享图（发群拉票）"; }, 1800);
+        shareEl.textContent = "已生成";
+        setTimeout(function () { shareEl.textContent = "生成分享图（发群拉票）"; }, 1800);
       };
       cv.toBlob(function (blob) {
         if (!blob) return;
