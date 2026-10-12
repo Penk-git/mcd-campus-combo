@@ -174,9 +174,12 @@
   var resultsEl = document.getElementById("results");
   var goEl = document.getElementById("go");
   var copyEl = document.getElementById("copy");
+  var shareEl = document.getElementById("shareImg");
 
   var current = "早八快手";
   var lastText = "";
+  var lastTop = [];      // 最近一次计算结果（供分享图渲染）
+  var lastCtx = null;    // { scene, budget, cat, mode }
 
   Object.keys(C.PROFILES).forEach(function (name) {
     var b = document.createElement("div");
@@ -319,8 +322,11 @@
     if (!top || top.length === 0) {
       resultsEl.innerHTML = '<div class="empty">⚠️ 这个预算 / 品类下凑不出组合，<br/>试试提高预算、换个品类或换个场景。</div>';
       lastText = "";
+      lastTop = []; lastCtx = null;
       return;
     }
+    lastTop = top;
+    lastCtx = { scene: current, budget: budget, cat: cat, mode: mode };
     var html = "";
     top.forEach(function (c, i) {
       var cpn = (c.coupon && c.coupon.id)
@@ -368,6 +374,130 @@
       }).catch(function () {});
     }
   };
+
+  // ===== 🖼️ 分享卡片图：canvas 画出 Top3 方案，可保存/分享到群 =====
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+  function wrapText(ctx, text, maxW) {
+    var lines = [], line = "";
+    for (var i = 0; i < text.length; i++) {
+      var t = line + text[i];
+      if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = text[i]; }
+      else line = t;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  function buildShareCard() {
+    var W = 720, pad = 34, innerW = W - pad * 2;
+    var headH = 168, footH = 96;
+    var cardH = 168; // 每张方案卡高度（含间距）
+    var n = Math.min(lastTop.length, 5);
+    var H = headH + n * cardH + footH + pad;
+    var cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    var ctx = cv.getContext("2d");
+
+    // 背景
+    var bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#fff6e6"); bg.addColorStop(1, "#ffefd0");
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+    // 顶部红招牌
+    ctx.fillStyle = "#da291c"; ctx.fillRect(0, 0, W, headH - 10);
+    ctx.fillStyle = "#ffc72c"; ctx.fillRect(0, headH - 10, W, 8);
+    ctx.fillStyle = "#ffe9b8"; ctx.font = "700 20px 'PingFang SC','Microsoft YaHei',sans-serif";
+    ctx.textBaseline = "top";
+    ctx.fillText("麦当劳中国 MCP 真实数据 · 校园凑单神器", pad, 22);
+    ctx.fillStyle = "#ffffff"; ctx.font = "900 40px 'PingFang SC','Microsoft YaHei',sans-serif";
+    ctx.fillText("🍔 麦当劳校园省钱凑单", pad, 52);
+    ctx.fillStyle = "#ffe9b8"; ctx.font = "800 22px 'PingFang SC','Microsoft YaHei',sans-serif";
+    var ctxLine = "场景：" + (lastCtx ? lastCtx.scene : "") + " · 预算 ¥" + (lastCtx ? lastCtx.budget : "");
+    if (lastCtx && lastCtx.cat && lastCtx.cat !== "不限") ctxLine += " · 想要 " + lastCtx.cat;
+    ctx.fillText(ctxLine, pad, 108);
+
+    // 方案卡
+    var y = headH + 6;
+    for (var i = 0; i < n; i++) {
+      var c = lastTop[i];
+      // 卡片
+      ctx.fillStyle = "#fffdf6";
+      rr(ctx, pad, y, innerW, cardH - 16, 16); ctx.fill();
+      ctx.fillStyle = i === 0 ? "#da291c" : (i === 1 ? "#f0a500" : "#c9a36b");
+      rr(ctx, pad, y, 8, cardH - 16, 4); ctx.fill();
+      var tx = pad + 26;
+      // 第一行：名次 + 实付
+      ctx.fillStyle = "#ffffff"; ctx.font = "900 18px 'PingFang SC','Microsoft YaHei',sans-serif";
+      ctx.fillStyle = i === 0 ? "#da291c" : (i === 1 ? "#f0a500" : "#c9a36b");
+      rr(ctx, tx, y + 14, 64, 26, 6); ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText("第" + (i + 1) + "名", tx + 10, y + 17);
+      ctx.fillStyle = "#9a6b2f"; ctx.font = "800 18px 'PingFang SC','Microsoft YaHei',sans-serif";
+      var payStr = "实付 ¥" + c.payable + "（原价 ¥" + c.original + "）";
+      ctx.fillText(payStr, tx + 78, y + 16);
+      // 第二行：餐品
+      var items = c.items.map(function (it) { return it[0] + (it[1] > 1 ? "×" + it[1] : ""); }).join(" + ");
+      ctx.fillStyle = "#2a2118"; ctx.font = "800 19px 'PingFang SC','Microsoft YaHei',sans-serif";
+      var lines = wrapText(ctx, items, innerW - 52);
+      var ly = y + 52;
+      lines.slice(0, 2).forEach(function (ln) { ctx.fillText(ln, tx, ly); ly += 26; });
+      // 第三行：营养 meta
+      ctx.fillStyle = "#9a6b2f"; ctx.font = "700 16px 'PingFang SC','Microsoft YaHei',sans-serif";
+      var meta = c.qty + " 份 · " + c.energy + " kcal · 蛋白 " + c.protein + "g";
+      if (c.coupon && c.coupon.id) meta += " · 🎟️ " + c.coupon.desc;
+      ctx.fillText(meta, tx, y + 110);
+      // 第四行：营养解读（截断一行）
+      ctx.fillStyle = "#6b5a44"; ctx.font = "700 15px 'PingFang SC','Microsoft YaHei',sans-serif";
+      var narr = C.nutriNarrative(c, lastCtx.mode);
+      if (ctx.measureText(narr).width > innerW - 60) {
+        while (narr.length > 1 && ctx.measureText(narr + "…").width > innerW - 60) narr = narr.slice(0, -1);
+        narr += "…";
+      }
+      ctx.fillText("💡 " + narr, tx, y + 134);
+      y += cardH;
+    }
+
+    // 底部
+    ctx.fillStyle = "#9a6b2f"; ctx.font = "800 18px 'PingFang SC','Microsoft YaHei',sans-serif";
+    ctx.fillText("数据来自麦当劳官方 MCP · 按定位返回当地门店真实菜单", pad, H - footH + 4);
+    ctx.fillStyle = "#da291c"; ctx.font = "900 19px 'PingFang SC','Microsoft YaHei',sans-serif";
+    ctx.fillText("github.com/Penk-git/mcd-campus-combo", pad, H - footH + 34);
+
+    return cv;
+  }
+  if (shareEl) {
+    shareEl.onclick = function () {
+      if (!lastTop.length) { compute(); }
+      if (!lastTop.length) { alert("先算出一个能用的方案再生成分享图哈"); return; }
+      var cv = buildShareCard();
+      var done = function () {
+        shareEl.textContent = "✅ 已生成";
+        setTimeout(function () { shareEl.textContent = "🖼️ 生成分享图（发群拉票）"; }, 1800);
+      };
+      cv.toBlob(function (blob) {
+        if (!blob) return;
+        var file = new File([blob], "mcd-campus-combo.png", { type: "image/png" });
+        // 手机端：直接调系统分享（微信/QQ 群一步到位）；桌面端：下载 PNG
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: "麦当劳校园省钱凑单" }).then(done).catch(function () {});
+        } else {
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "mcd-campus-combo.png";
+          a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+          done();
+        }
+      }, "image/png");
+    };
+  }
 
   window.__demo = { compute: compute, getText: function () { return lastText; } };
 })();

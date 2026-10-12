@@ -229,6 +229,36 @@
   .modal-title { font-size: 17px; font-weight: 900; color: #1d1810; margin: 8px 0 6px; line-height: 1.35; }
   .modal-desc { font-size: 13px; color: #4a4036; line-height: 1.6; white-space: pre-line; margin-top: 4px; }
   .modal-src { font-size: 10.5px; color: #a2917c; margin-top: 12px; line-height: 1.5; }
+
+  /* ===== 移动端适配（评委手机直开） ===== */
+  @media (max-width: 480px) {
+    body { padding: 0 10px 44px; }
+    .sign { margin: 0 -10px 6px; padding: 12px 10px 14px; }
+    h1 { font-size: 19px; margin: 10px 0 3px; }
+    .sub { font-size: 12px; }
+    .sign .arches { opacity: .14; }
+    .charm { display: none; }
+    .panel { padding: 13px 12px; border-radius: 16px; margin: 12px 0; }
+    .label { font-size: 12.5px; }
+    .chip { font-size: 13px; padding: 7px 10px; }
+    .row { gap: 10px; }
+    .field input, .field select { font-size: 16px; }  /* 16px 防 iOS 聚焦自动放大 */
+    .locbar { flex-wrap: wrap; gap: 8px; }
+    .locbtn { flex: 1 1 auto; text-align: center; }
+    .citysel { flex: 1 1 100%; }
+    .go { font-size: 16px; padding: 13px; }
+    .rcard { padding: 12px 11px 11px; border-radius: 14px; }
+    .pay b { font-size: 23px; }
+    .iitem { padding: 5px 8px 5px 5px; gap: 6px; }
+    .iitem .iimg { width: 38px; height: 38px; }
+    .iitem .iname { font-size: 12px; }
+    .meta { gap: 10px; font-size: 11px; }
+    .narr { font-size: 11px; }
+    .star { font-size: 14px; padding: 12px; }
+    .offers { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+    .modal-mask { padding: 12px; align-items: flex-end; }
+    .modal { max-height: 86vh; padding: 15px 14px; border-radius: 16px 16px 0 0; }
+  }
 </style>
 </head>
 <body>
@@ -320,6 +350,7 @@
   </div>
 
   <a class="star" href="https://github.com/Penk-git/mcd-campus-combo" target="_blank" rel="noopener">⭐ 觉得好用？给项目点个 Star 支持一下</a>
+  <button class="copy" id="shareImg">🖼️ 生成分享图（发群拉票）</button>
   <button class="copy" id="copy">📋 复制当前方案</button>
 
   <p class="disc">
